@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../services/authService'
+import { useAuth } from '../contexts/useAuth'
 import { AxiosError } from 'axios'
+import { toast } from 'react-toastify'
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const { setUser } = useAuth()
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
@@ -14,9 +17,10 @@ const LoginPage: React.FC = () => {
     setError('')
 
     try {
-      const response = await login({ email, password })
-      localStorage.setItem('token', response.token)
-      navigate('/home')
+      const user = await login({ email, password })  
+      setUser(user)                                 
+      toast.success('Login realizado com sucesso!')
+      navigate('/')
     } catch (err) {
       const error = err as AxiosError
       console.error('Erro ao logar:', error.response?.data || error.message)
