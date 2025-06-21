@@ -51,4 +51,28 @@ export const Button = styled.button`
   &.register:hover {
     background-color: #1e7e34;
   }
+  &.logout {
+    background-color: #e74c3c; /* vermelho */
+    color: white;
+
+    &:hover {
+      background-color: #c0392b;
+    }
+  }
 `
+
+export const TopBar = styled.div`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff; /* fundo branco ou o que quiser */
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+`
+
+

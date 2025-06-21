@@ -28,6 +28,11 @@ export const login = async (data: LoginData) => {
   return user
 }
 
+export const logout = () => {
+  localStorage.removeItem("token");
+  window.location.href = "/";
+};
+
 
 export async function registerUser(data: RegisterData) {
   const response = await api.post('/auth/register', data)
