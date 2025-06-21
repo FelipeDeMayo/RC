@@ -5,7 +5,7 @@ interface User {
   id: number
   name: string
   email: string
-  role?: string
+  role: string
 }
 
 interface AuthContextType {
@@ -18,17 +18,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
     if (storedUser && storedUser !== 'undefined') {
       try {
-        setUser(JSON.parse(storedUser))
+        const parsed = JSON.parse(storedUser)
+        console.log('🔍 Usuário carregado do localStorage:', parsed)
+        setUser(parsed)
       } catch (error) {
         console.error('Erro ao fazer parse do usuário salvo:', error)
         localStorage.removeItem('user')
       }
     }
+    setLoading(false)
   }, [])
 
   const logoutUser = () => {
@@ -36,6 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('user')
     setUser(null)
   }
+
+  if (loading) return <p>Carregando...</p> // ou uma tela de splash
 
   return (
     <AuthContext.Provider value={{ user, setUser, logoutUser }}>

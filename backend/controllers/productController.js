@@ -6,11 +6,30 @@ const path = require('path');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalName);
+    const ext = path.extname(file.originalname);
     const filename = `${Date.now()}${ext}`;
     cb(null, filename);
   }
 });
+
+exports.getProductById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao buscar produto por ID' });
+  }
+};
 
 exports.listProducts = async (req, res) => {
   try {

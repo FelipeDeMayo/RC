@@ -52,12 +52,13 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user.id, role: user.role },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
 
     res.json({ token, user });
   } catch (error) {
+    console.error('Erro no login:', error);
     res.status(500).json({ error: 'Erro ao fazer login.' });
   }
 };

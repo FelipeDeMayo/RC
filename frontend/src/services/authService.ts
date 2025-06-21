@@ -13,7 +13,7 @@ export interface RegisterData {
 
 export const login = async (data: LoginData) => {
   const response = await api.post('/auth/login', data)
-  console.log('Resposta da API:', response.data)
+  console.log('Resposta da API:', JSON.stringify(response.data, null, 2))
 
   const { token, user } = response.data
 

@@ -18,16 +18,18 @@ const {
   listProducts,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductById
 } = require('../controllers/productController');
 
 const { verifyToken, isAdmin } = require('../middlewares/authMiddleware');
 
 
 router.get('/products', listProducts);
+router.get('/products/:id', getProductById);
+router.post('/products', createProduct);
+router.put('/products/:id', updateProduct);
+router.delete('/products/:id', deleteProduct);
 
-router.post('/products', verifyToken, isAdmin, upload.single('image'), createProduct);
-router.put('/products/:id', verifyToken, isAdmin, updateProduct);
-router.delete('/products/:id', verifyToken, isAdmin, deleteProduct);
 
 module.exports = router;
