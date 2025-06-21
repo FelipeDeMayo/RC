@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { FaUserCircle } from 'react-icons/fa'
 
 export const Container = styled.div`
   display: flex;
@@ -9,6 +10,21 @@ export const Container = styled.div`
   background-color: #f9f9f9;
   padding: 2rem;
   text-align: center;
+`
+export const ProfileContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  padding-right: 1rem;
+`
+export const ProfileIcon = styled(FaUserCircle)`
+  color: #007bff;
+  width: 24px;
+  height: 24px;
 `
 
 export const Title = styled.h1`
@@ -36,6 +52,7 @@ export const Button = styled.button`
   transition: background-color 0.3s ease;
   color: #fff;
 
+
   &.login {
     background-color: #007bff;
   }
@@ -52,8 +69,9 @@ export const Button = styled.button`
     background-color: #1e7e34;
   }
   &.logout {
-    background-color: #e74c3c; /* vermelho */
+    background-color: #e74c3c; 
     color: white;
+    margin-right: 1rem;
 
     &:hover {
       background-color: #c0392b;
@@ -69,7 +87,7 @@ export const TopBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fff; /* fundo branco ou o que quiser */
+  background-color: #fff;
   padding: 1rem 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
