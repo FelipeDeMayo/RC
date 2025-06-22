@@ -1,4 +1,5 @@
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
 import type { Product } from '../types/Product'
 import { CartContext, type CartContextType, type ProductWithQuantity } from './CartContextType'
 
@@ -30,9 +31,21 @@ export const CartProvider = ({ children }: Props) => {
     })
   }
 
-  const removeFromCart = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id))
-  }
+const removeFromCart = (id: number) => {
+  setCartItems(prev => {
+    return prev
+      .map(item => {
+        if (item.id === id) {
+          const newQuantity = item.quantity - 1
+          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null
+        }
+        return item
+      })
+      .filter((item): item is ProductWithQuantity => item !== null)
+  })
+}
+
+
 
   const clearCart = () => {
     setCartItems([])

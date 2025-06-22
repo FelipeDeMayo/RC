@@ -7,11 +7,9 @@ import ProfilePage from './pages/ProfilePage'
 import AdminRoute from './routes/AdminRoute'
 import AdminProductsPage from './pages/AdminProductsPage'
 import CartPage from './pages/CartPage'
-import Header from './components/Header'
 
 export const AppRoutes = () => (
   <>
-    <Header /> {/* ✅ Coloque fora do <Routes> */}
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />

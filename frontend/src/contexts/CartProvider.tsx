@@ -32,7 +32,18 @@ export const CartProvider = ({ children }: Props) => {
   }
 
   const removeFromCart = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id))
+    setCartItems(prev =>
+      prev.flatMap(item => {
+        if (item.id === id) {
+          if (item.quantity > 1) {
+            return [{ ...item, quantity: item.quantity - 1 }]
+          } else {
+            return []
+          }
+        }
+        return [item]
+      })
+    )
   }
 
   const clearCart = () => {

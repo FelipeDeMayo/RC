@@ -5,7 +5,7 @@ import {
   Title,
   Description,
   Price
-} from '../styles/ProductCardStyles' // ajuste o caminho se necessário
+} from '../styles/ProductCardStyles'
 
 interface ProductCardProps {
   id: number
@@ -13,9 +13,10 @@ interface ProductCardProps {
   description: string
   price: number
   image?: string
+  onAddToCart?: () => void
 }
 
-const ProductCard = ({ id, name, description, price, image }: ProductCardProps) => {
+const ProductCard = ({ id, name, description, price, image, onAddToCart }: ProductCardProps) => {
   const imageUrl = image?.startsWith('http')
     ? image
     : `http://localhost:3000/uploads/${image}`
@@ -30,10 +31,29 @@ const ProductCard = ({ id, name, description, price, image }: ProductCardProps) 
         <Title>{name}</Title>
         <Description>{description}</Description>
         <Price>R$ {price.toFixed(2)}</Price>
+
+        {onAddToCart && (
+          <button
+            onClick={e => {
+              e.preventDefault() 
+              onAddToCart()
+            }}
+            style={{
+              marginTop: '10px',
+              padding: '8px 12px',
+              backgroundColor: '#007bff',
+              border: 'none',
+              color: '#fff',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+            Adicionar ao carrinho
+          </button>
+        )}
       </Card>
     </Link>
   )
 }
 
 export default ProductCard
-

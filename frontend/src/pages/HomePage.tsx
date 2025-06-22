@@ -1,15 +1,15 @@
-import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import {
   Container,
-  Title,
-  ButtonGroup,
-  Button,
-  TopBar
+  Title
 } from '../styles/HomePageStyles'
 import { useAuth } from '../contexts/useAuth'
 import ProductCard from '../components/ProductCard'
-import { ProfileContainer, ProfileIcon } from '../styles/HomePageStyles'
+import CartModal from '../components/CartModal'
+import Navbar from '../components/Navbar'
+
+// Importa o hook do contexto do carrinho
+import { useCart } from '../contexts/useCart'
 
 interface Product {
   id: number
@@ -20,10 +20,12 @@ interface Product {
 }
 
 const HomePage = () => {
-  const { user, logoutUser } = useAuth()
-  const navigate = useNavigate()
-
+  const { user } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
+  const [isCartOpen, setIsCartOpen] = useState(false)
+
+  // Pega os itens do carrinho do contexto
+  const { cartItems } = useCart()
 
   useEffect(() => {
     fetch('http://localhost:3000/api/products', {
@@ -31,63 +33,42 @@ const HomePage = () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (Array.isArray(data)) {
           setProducts(data)
         } else {
           console.warn('Resposta inesperada:', data)
         }
       })
-      .catch((err) => console.error('Erro ao buscar produtos:', err))
+      .catch(err => console.error('Erro ao buscar produtos:', err))
   }, [])
 
-  const handleLogout = () => {
-    logoutUser()
-    navigate('/')
+  const toggleCart = () => {
+    setIsCartOpen(prev => !prev)
   }
 
   return (
-    <Container>
-      <TopBar>
-  <div>
-    <Title>
-      {user ? `🛍️ Bem-vindo, ${user.name}!` : '🛍️ Bem-vindo ao E-commerce'}
-    </Title>
-  </div>
+    <>
+      <Navbar onCartToggle={toggleCart} isCartOpen={isCartOpen} />
+      {isCartOpen && <CartModal items={cartItems} onClose={toggleCart} />}
 
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-    {user && user.role && (
-      <ProfileContainer>
-        <ProfileIcon />
-        {user.role}
-      </ProfileContainer>
-    )}
+      <Container style={{ paddingTop: '100px' }}>
+        <Title>
+          {user ? `🛍️ Bem-vindo, ${user.name}!` : '🛍️ Produtos disponíveis:'}
+        </Title>
 
-    <ButtonGroup>
-      {user ? (
-        <Button className="logout" onClick={handleLogout}>
-          Sair
-        </Button>
-      ) : (
-        <>
-          <Link to="/login">
-            <Button className="login">Login</Button>
-          </Link>
-          <Link to="/register">
-            <Button className="register">Criar Conta</Button>
-          </Link>
-        </>
-      )}
-    </ButtonGroup>
-  </div>
-</TopBar>
-
-      <div style={{ marginTop: '2rem', width: '100%' }}>
-        <h2 style={{ marginBottom: '1rem' }}>Produtos disponíveis:</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-          {Array.isArray(products) && products.length > 0 ? (
-            products.map((product) => (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            justifyContent: 'center',
+            marginTop: '2rem',
+          }}
+        >
+          {products.length > 0 ? (
+            products.map(product => (
               <ProductCard
                 key={product.id}
                 id={product.id}
@@ -101,8 +82,8 @@ const HomePage = () => {
             <p>Nenhum produto encontrado.</p>
           )}
         </div>
-      </div>
-    </Container>
+      </Container>
+    </>
   )
 }
 
