@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:3000/cart';
 
 const getToken = () => {
-  return localStorage.getItem('token'); // ✅ Token é uma string simples (JWT), não precisa de parse
+  return localStorage.getItem('token');
 };
 
 export const getCart = async () => {

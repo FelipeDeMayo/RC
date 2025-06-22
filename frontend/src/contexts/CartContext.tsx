@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import type { ReactNode } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import type { Product } from '../types/Product'
 import { CartContext, type CartContextType, type ProductWithQuantity } from './CartContextType'
 
