@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { getProductById } from '../services/productService'
+import { useCart } from '../contexts/useCart'
 import {
   ProductContainer,
   ProductImage,
@@ -22,6 +23,8 @@ const ProductPage = () => {
   const { id } = useParams()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const { addToCart } = useCart() 
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -55,7 +58,9 @@ const ProductPage = () => {
       )}
       <ProductDescription>{product.description}</ProductDescription>
       <ProductPrice>R$ {product.price.toFixed(2)}</ProductPrice>
-      <AddToCartButton>Adicionar ao carrinho</AddToCartButton>
+      <AddToCartButton onClick={() => addToCart(product)}>
+        Adicionar ao carrinho
+      </AddToCartButton>
     </ProductContainer>
   )
 }

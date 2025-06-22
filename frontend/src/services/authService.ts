@@ -22,11 +22,12 @@ export const login = async (data: LoginData) => {
     throw new Error('Usuário inválido')
   }
 
-  localStorage.setItem('token', token)
-  localStorage.setItem('user', JSON.stringify(user))
+  const userWithToken = { ...user, token }
 
-  return user
+  localStorage.setItem('user', JSON.stringify(userWithToken))
+  return userWithToken
 }
+
 
 export const logout = () => {
   localStorage.removeItem("token");

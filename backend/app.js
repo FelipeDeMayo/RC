@@ -12,6 +12,7 @@ const authMiddleware = require('./middlewares/authMiddleware')
 const { verifyToken, isAdmin } = require('./middlewares/authMiddleware');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 app.use(express.json());
 app.use(cors());
@@ -25,13 +26,14 @@ const storage = multer.diskStorage({
     cb(null, filename)
   }
 })
+
 const upload = multer({ storage })
 
 app.use('/auth', authRoutes);              
 app.use('/api', verifyToken, productRoutes);
-
 app.get('/', (req, res) => {
   res.send('API funcionando!');
 });
+app.use('/cart', cartRoutes);
 
 module.exports = app;

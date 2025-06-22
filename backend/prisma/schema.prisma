@@ -32,22 +32,23 @@ model Product {
   createdAt   DateTime   @default(now())
   adminId     Int
   admin       User       @relation(fields: [adminId], references: [id])
-  cartItems   CartItem[] // 👈 Adiciona esta linha
+  cartItems   CartItem[] +
 }
 
 model Cart {
-  id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id])
-  userId    Int        @unique
-  items     CartItem[]
-  createdAt DateTime   @default(now())
+  id         Int       @id @default(autoincrement())
+  userId     Int       @unique      
+  user       User      @relation(fields: [userId], references: [id])
+  createdAt  DateTime  @default(now())
+  items      CartItem[]
 }
+
 
 model CartItem {
   id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id])
   cartId    Int
-  product   Product @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
+  product   Product @relation(fields: [productId], references: [id])
+  cart      Cart    @relation(fields: [cartId], references: [id])
 }
