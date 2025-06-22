@@ -1,7 +1,10 @@
 const express = require('express');
+const router = express.Router();
+const productController = require('../controllers/productController');
+const { isAdmin } = require('../middlewares/authMiddleware');
+
 const multer = require('multer');
 const path = require('path');
-const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -11,25 +14,13 @@ const storage = multer.diskStorage({
     cb(null, filename);
   }
 });
-
 const upload = multer({ storage });
 
-const {
-  listProducts,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getProductById
-} = require('../controllers/productController');
+router.get('/products', productController.listProducts);
+router.get('/products/:id', productController.getProductById);
 
-const { verifyToken, isAdmin } = require('../middlewares/authMiddleware');
-
-
-router.get('/products', listProducts);
-router.get('/products/:id', getProductById);
-router.post('/products', createProduct);
-router.put('/products/:id', updateProduct);
-router.delete('/products/:id', deleteProduct);
-
+router.post('/products', isAdmin, upload.single('image'), productController.createProduct);
+router.put('/products/:id', isAdmin, upload.single('image'), productController.updateProduct);
+router.delete('/products/:id', isAdmin, productController.deleteProduct);
 
 module.exports = router;

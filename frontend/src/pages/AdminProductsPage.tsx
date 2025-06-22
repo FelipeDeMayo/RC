@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
+
 import {
   Container,
   Title,
@@ -15,7 +17,6 @@ import {
   ActionButton,
 } from '../styles/AdminProductPage'
 
-
 interface Product {
   id: number
   name: string
@@ -27,9 +28,14 @@ interface Product {
 const AdminProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([])
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [form, setForm] = useState({ name: '', description: '', price: '', image: '' })
+  const [form, setForm] = useState({ name: '', description: '', price: '' })
+  const [imageFile, setImageFile] = useState<File | null>(null)
 
   useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = () => {
     fetch('http://localhost:3000/api/products', {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -38,14 +44,33 @@ const AdminProductsPage = () => {
       .then((res) => res.json())
       .then(setProducts)
       .catch((err) => console.error('Erro ao buscar produtos:', err))
-  }, [])
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImageFile(e.target.files[0])
+    }
+  }
+
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
+
+    if (!form.name || !form.description || !form.price) {
+      alert('Preencha todos os campos obrigatórios')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('name', form.name)
+    formData.append('description', form.description)
+    formData.append('price', form.price)
+    if (imageFile) {
+      formData.append('image', imageFile)
+    }
 
     const method = editingProduct ? 'PUT' : 'POST'
     const url = editingProduct
@@ -55,28 +80,20 @@ const AdminProductsPage = () => {
     fetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify({
-        name: form.name,
-        description: form.description,
-        price: Number(form.price),
-        image: form.image,
-      }),
+      body: formData,
     })
-      .then((res) => res.json())
-      .then(() => {
-        setForm({ name: '', description: '', price: '', image: '' })
-        setEditingProduct(null)
-        return fetch('http://localhost:3000/api/products', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        })
+      .then((res) => {
+        if (!res.ok) throw new Error('Erro ao salvar produto')
+        return res.json()
       })
-      .then((res) => res.json())
-      .then(setProducts)
+      .then(() => {
+        setForm({ name: '', description: '', price: '' })
+        setImageFile(null)
+        setEditingProduct(null)
+        fetchProducts()
+      })
       .catch((err) => console.error('Erro ao salvar produto:', err))
   }
 
@@ -99,8 +116,8 @@ const AdminProductsPage = () => {
       name: product.name,
       description: product.description,
       price: String(product.price),
-      image: product.image ?? '',
     })
+    setImageFile(null)
   }
 
   return (
@@ -108,17 +125,49 @@ const AdminProductsPage = () => {
       <Title>Painel de Produtos (Admin)</Title>
 
       <Form onSubmit={handleSubmit}>
-        <Input name="name" placeholder="Nome" value={form.name} onChange={handleChange} required />
-        <Input name="description" placeholder="Descrição" value={form.description} onChange={handleChange} required />
-        <Input name="price" type="number" placeholder="Preço" value={form.price} onChange={handleChange} required />
-        <Input name="image" placeholder="URL da imagem" value={form.image} onChange={handleChange} />
+        <Input
+          name="name"
+          placeholder="Nome"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          name="description"
+          placeholder="Descrição"
+          value={form.description}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          name="price"
+          type="number"
+          placeholder="Preço"
+          value={form.price}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ marginTop: '1rem' }}
+        />
+
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <Button type="submit">{editingProduct ? 'Atualizar Produto' : 'Criar Produto'}</Button>
+          <Button type="submit">
+            {editingProduct ? 'Atualizar Produto' : 'Criar Produto'}
+          </Button>
           {editingProduct && (
-            <Button cancel type="button" onClick={() => {
-              setEditingProduct(null)
-              setForm({ name: '', description: '', price: '', image: '' })
-            }}>
+            <Button
+              cancel
+              type="button"
+              onClick={() => {
+                setEditingProduct(null)
+                setForm({ name: '', description: '', price: '' })
+                setImageFile(null)
+              }}
+            >
               Cancelar Edição
             </Button>
           )}
@@ -135,7 +184,10 @@ const AdminProductsPage = () => {
               />
             )}
             <div>
-              <ProductTitle>{product.name} <ProductPrice>R$ {product.price.toFixed(2)}</ProductPrice></ProductTitle>
+              <ProductTitle>
+                {product.name}{' '}
+                <ProductPrice>R$ {product.price.toFixed(2)}</ProductPrice>
+              </ProductTitle>
               <ProductDescription>{product.description}</ProductDescription>
             </div>
             <Actions>

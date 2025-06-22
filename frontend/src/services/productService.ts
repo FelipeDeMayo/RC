@@ -10,6 +10,13 @@ export const getAllProducts = async () => {
 }
 
 export const getProductById = async (id: number) => {
-  const response = await api.get(`/products/${id}`)
+  const token = localStorage.getItem('token')
+
+  const response = await api.get(`/products/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+
   return response.data
 }

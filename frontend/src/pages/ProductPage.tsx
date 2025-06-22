@@ -1,13 +1,21 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { getProductById } from '../services/productService'
+import {
+  ProductContainer,
+  ProductImage,
+  ProductTitle,
+  ProductDescription,
+  ProductPrice,
+  AddToCartButton
+} from '../components/ProductCardStyles'
 
 type Product = {
   id: number
-  title: string
+  name: string
   description: string
   price: number
-  imageUrl?: string
+  image?: string
 }
 
 const ProductPage = () => {
@@ -35,16 +43,20 @@ const ProductPage = () => {
   if (loading) return <p>Carregando produto...</p>
   if (!product) return <p>Produto não encontrado.</p>
 
+  const imageUrl = product.image?.startsWith('http')
+    ? product.image
+    : `http://localhost:3000/uploads/${product.image}`
+
   return (
-    <div style={{ padding: '1rem' }}>
-      <h1>{product.title}</h1>
-      {product.imageUrl && (
-        <img src={product.imageUrl} alt={product.title} width="300" />
+    <ProductContainer>
+      <ProductTitle>{product.name}</ProductTitle>
+      {product.image && (
+        <ProductImage src={imageUrl} alt={product.name} />
       )}
-      <p>{product.description}</p>
-      <p><strong>Preço:</strong> R$ {product.price.toFixed(2)}</p>
-      <button>Adicionar ao carrinho</button>
-    </div>
+      <ProductDescription>{product.description}</ProductDescription>
+      <ProductPrice>R$ {product.price.toFixed(2)}</ProductPrice>
+      <AddToCartButton>Adicionar ao carrinho</AddToCartButton>
+    </ProductContainer>
   )
 }
 

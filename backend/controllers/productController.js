@@ -41,8 +41,12 @@ exports.listProducts = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
-  const { name, description, price } = req.body;
-  const image = req.file ? req.file.filename : null;
+  const { name, description, price } = req.body
+  const image = req.file ? req.file.filename : null
+
+  if (!name || !description || !price) {
+    return res.status(400).json({ error: 'Campos obrigatórios faltando' })
+  }
 
   try {
     const product = await prisma.product.create({
@@ -51,18 +55,14 @@ exports.createProduct = async (req, res) => {
         description,
         price: parseFloat(price),
         image,
-        admin: {
-          connect: { id: req.user.userId }
-        }
+        admin: { connect: { id: req.user.userId } },
       }
-    });
-
-    res.status(201).json(product);
+    })
+    res.status(201).json(product)
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro ao criar produto' });
+    res.status(500).json({ error: 'Erro ao criar produto' })
   }
-};
+}
 
 
 exports.updateProduct = async (req, res) => {

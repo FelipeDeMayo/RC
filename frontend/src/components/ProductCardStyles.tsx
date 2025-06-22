@@ -1,36 +1,46 @@
 import styled from 'styled-components'
 
-export const Card = styled.div`
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  width: 250px;
-  background-color: #fff;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+export const ProductContainer = styled.div`
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
 `
 
-export const Image = styled.img`
+export const ProductImage = styled.img`
   width: 100%;
-  height: 450px; 
-  object-fit: cover;
+  max-height: 450px;
+  object-fit: contain;
   border-radius: 8px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 `
 
+export const ProductTitle = styled.h1`
+  font-size: 2rem;
+  margin-bottom: 1rem;
+`
 
-export const Title = styled.h3`
+export const ProductDescription = styled.p`
   font-size: 1.1rem;
-  margin-bottom: 0.25rem;
+  color: #444;
+  margin-bottom: 1rem;
 `
 
-export const Description = styled.p`
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.5rem;
+export const ProductPrice = styled.p`
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
 `
 
-export const Price = styled.strong`
+export const AddToCartButton = styled.button`
+  padding: 0.6rem 1.2rem;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
   font-size: 1rem;
-  color: #000;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #333;
+  }
 `

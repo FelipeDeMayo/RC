@@ -8,7 +8,7 @@ import {
   TopBar
 } from '../styles/HomePageStyles'
 import { useAuth } from '../contexts/useAuth'
-import { ProductCard } from '../components/ProductCard'
+import ProductCard from '../components/ProductCard'
 import { ProfileContainer, ProfileIcon } from '../styles/HomePageStyles'
 
 interface Product {

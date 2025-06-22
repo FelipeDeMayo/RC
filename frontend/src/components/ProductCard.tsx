@@ -1,5 +1,11 @@
 import { Link } from 'react-router-dom'
-import { Card, Image, Title, Description, Price } from './ProductCardStyles'
+import {
+  Card,
+  Image,
+  Title,
+  Description,
+  Price
+} from '../styles/ProductCardStyles' // ajuste o caminho se necessário
 
 interface ProductCardProps {
   id: number
@@ -9,13 +15,16 @@ interface ProductCardProps {
   image?: string
 }
 
-export const ProductCard = ({ id, name, description, price, image }: ProductCardProps) => {
+const ProductCard = ({ id, name, description, price, image }: ProductCardProps) => {
   const imageUrl = image?.startsWith('http')
     ? image
     : `http://localhost:3000/uploads/${image}`
 
   return (
-    <Link to={`/produto/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link
+      to={`/product/${id}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
       <Card>
         {image && <Image src={imageUrl} alt={name} />}
         <Title>{name}</Title>
@@ -25,3 +34,6 @@ export const ProductCard = ({ id, name, description, price, image }: ProductCard
     </Link>
   )
 }
+
+export default ProductCard
+
