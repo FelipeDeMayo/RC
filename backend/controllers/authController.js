@@ -40,7 +40,6 @@ const register = async (req, res) => {
   }
 };
 
-// LOGIN
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -100,7 +99,6 @@ const refreshTokenHandler = (req, res) => {
   });
 };
 
-// LOGOUT
 const logout = (req, res) => {
   const { token } = req.body;
   refreshTokens = refreshTokens.filter(t => t !== token);

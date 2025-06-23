@@ -4,25 +4,30 @@ import { Link } from 'react-router-dom'
 const CartPage = () => {
   const { cartItems, removeFromCart, clearCart } = useCart()
 
+  console.log('Cart Items:', cartItems)
+
   const total = cartItems.reduce(
-    (acc, item) => acc + item.price * (item.quantity || 1),
+    (acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 1),
     0
   )
+
 
   return (
     <div style={{ padding: '2rem' }}>
       <h2>🛒 Carrinho</h2>
 
       {cartItems.length === 0 ? (
-        <p>Seu carrinho está vazio. <Link to="/">Voltar às compras</Link></p>
+        <p>
+          Seu carrinho está vazio. <Link to="/">Voltar às compras</Link>
+        </p>
       ) : (
         <>
           <ul>
             {cartItems.map(item => (
               <li key={item.id} style={{ marginBottom: '1rem' }}>
                 <strong>{item.name}</strong> <br />
-                Preço: R$ {item.price.toFixed(2)} <br />
-                Quantidade: {item.quantity} <br />
+                Preço: R$ {item.price !== undefined ? item.price.toFixed(2) : '0.00'} <br />
+                Quantidade: {item.quantity ?? 1} <br />
                 <button onClick={() => removeFromCart(item.id)}>Remover</button>
               </li>
             ))}
