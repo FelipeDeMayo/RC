@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { registerUser } from '../services/authService'
+import { register } from '../services/authService'
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -18,7 +18,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault() 
     try {
-      await registerUser(formData)
+      await register(formData)
       navigate('/login')
     } catch (err: unknown) {
       if (err instanceof Error) {

@@ -30,7 +30,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 app.use('/auth', authRoutes);              
-app.use('/api', verifyToken, productRoutes);
+
+app.use('/api', productRoutes);
+
 app.get('/', (req, res) => {
   res.send('API funcionando!');
 });

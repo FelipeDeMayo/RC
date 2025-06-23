@@ -1,33 +1,52 @@
+// src/components/Header.tsx
 import { Link } from 'react-router-dom'
 import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContextType'
 import { useAuth } from '../contexts/useAuth'
 
+import {
+  TopBar,
+  NavLinks,
+  NavButton,
+  Logo
+} from '../styles/NavBarStyles'
+
 const Header = () => {
   const { user, logoutUser } = useAuth()
   const cart = useContext(CartContext)
 
-  return (
-    <header style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
-      <Link to="/">🏠 Home</Link>
+  const totalItems = cart?.cartItems.reduce((acc, item) => acc + item.quantity, 0) || 0
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <Link to="/cart">
-          🛒 Carrinho ({cart?.cartItems.reduce((acc, item) => acc + item.quantity, 0)})
-        </Link>
+  return (
+    <TopBar>
+      <Logo>
+        <Link to="/">🏠 Home</Link>
+      </Logo>
+
+      <NavLinks>
+        <NavButton className="cart" as={Link} to="/cart">
+          🛒 Carrinho ({totalItems})
+        </NavButton>
 
         {user && <span>{user.name}</span>}
 
         {user ? (
-          <button onClick={logoutUser}>Sair</button>
+          <NavButton onClick={logoutUser} color="#f44336">
+            Sair
+          </NavButton>
         ) : (
           <>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Criar Conta</Link>
+            <NavButton as={Link} to="/login">
+              Login
+            </NavButton>
+            <NavButton as={Link} to="/register">
+              Criar Conta
+            </NavButton>
           </>
         )}
-      </div>
-    </header>
+      </NavLinks>
+    </TopBar>
   )
 }
+
 export default Header

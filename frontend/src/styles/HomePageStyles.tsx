@@ -85,19 +85,3 @@ export const Button = styled.button`
     }
   }
 `
-
-export const TopBar = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #fff;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  box-sizing: border-box;
-`

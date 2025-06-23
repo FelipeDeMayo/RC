@@ -1,22 +1,21 @@
 import axios from 'axios'
 
+const token = localStorage.getItem('token')
+
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api'
+  baseURL: 'http://localhost:3000/api',
+  headers: {
+    Authorization: token ? `Bearer ${token}` : '',
+  }
 })
 
+
 export const getAllProducts = async () => {
-  const response = await api.get('/products')
+  const response = await api.get('/api/products')
   return response.data
 }
 
 export const getProductById = async (id: number) => {
-  const token = localStorage.getItem('token')
-
-  const response = await api.get(`/products/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-
+  const response = await api.get(`/api/products/${id}`)
   return response.data
 }

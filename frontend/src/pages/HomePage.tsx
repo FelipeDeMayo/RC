@@ -19,28 +19,34 @@ interface Product {
 }
 
 const HomePage = () => {
-  const { user } = useAuth()
+  const { user, token } = useAuth()  // pegue token separado
   const [products, setProducts] = useState<Product[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
 
   const { cartItems } = useCart()
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/products', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+  const headers: HeadersInit = {}
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  fetch('http://localhost:3000/api/products', { headers })
+    .then(async res => {
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(`Erro HTTP ${res.status}: ${text}`)
       }
+      return res.json()
     })
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setProducts(data)
-        } else {
-          console.warn('Resposta inesperada:', data)
-        }
-      })
-      .catch(err => console.error('Erro ao buscar produtos:', err))
-  }, [])
+    .then(data => {
+      console.log('🔍 Produtos recebidos:', data)
+      setProducts(Array.isArray(data) ? data : [])
+    })
+    .catch(err => console.error('❌ Erro ao buscar produtos:', err))
+}, [token])
+
 
   const toggleCart = () => {
     setIsCartOpen(prev => !prev)

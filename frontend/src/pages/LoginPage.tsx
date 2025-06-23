@@ -10,21 +10,25 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('')
   const { setUser } = useAuth()
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
 
     try {
-      const user = await login({ email, password })  
-      setUser(user)                                 
+      const user = await login({ email, password })
+      setUser(user, user.token)
       toast.success('Login realizado com sucesso!')
       navigate('/')
     } catch (err) {
       const error = err as AxiosError
       console.error('Erro ao logar:', error.response?.data || error.message)
       setError('Credenciais inválidas')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -39,6 +43,7 @@ const LoginPage: React.FC = () => {
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
+            disabled={loading}
           />
         </div>
         <div>
@@ -48,10 +53,13 @@ const LoginPage: React.FC = () => {
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
+            disabled={loading}
           />
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Entrar</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
       </form>
     </div>
   )

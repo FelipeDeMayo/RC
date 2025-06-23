@@ -1,41 +1,39 @@
 import api from './api'
 
-export interface LoginData {
-  email: string
-  password: string
-}
-
-export interface RegisterData {
+export interface RegisterPayload {
   name: string
   email: string
   password: string
+  role?: string
 }
 
-export const login = async (data: LoginData) => {
-  const response = await api.post('/auth/login', data)
-  console.log('Resposta da API:', JSON.stringify(response.data, null, 2))
+export interface User {
+  id: number
+  name: string
+  email: string
+  role: string
+  token?: string // será adicionada manualmente após login
+}
 
-  const { token, user } = response.data
+interface LoginResponse {
+  accessToken: string
+  user: User
+}
 
-  if (!user) {
-    console.warn('Usuário não retornado da API')
-    throw new Error('Usuário inválido')
-  }
+export async function login(data: { email: string; password: string }): Promise<User> {
+  const response = await api.post<LoginResponse>('/auth/login', data)
+  console.log('🔍 Resposta da API de login:', response.data)
 
-  const userWithToken = { ...user, token }
+  const { accessToken, user } = response.data
+  const userWithToken: User = { ...user, token: accessToken }
 
+  localStorage.setItem('token', accessToken)
   localStorage.setItem('user', JSON.stringify(userWithToken))
+
   return userWithToken
 }
 
-
-export const logout = () => {
-  localStorage.removeItem("token");
-  window.location.href = "/";
-};
-
-
-export async function registerUser(data: RegisterData) {
-  const response = await api.post('/auth/register', data)
+export async function register(data: RegisterPayload): Promise<{ message: string }> {
+  const response = await api.post<{ message: string }>('/auth/register', data)
   return response.data
 }

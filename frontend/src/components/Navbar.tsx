@@ -1,37 +1,36 @@
-import { useAuth } from '../contexts/useAuth'
-import { useNavigate } from 'react-router-dom'
-import { TopBar, Button } from '../styles/HomePageStyles'
-import { NavButton } from '../styles/NavBarStyles'
+import React from 'react'
+import {
+  NavButton,
+  Logo,
+  NavLinks,
+  TopBar
+} from '../styles/NavBarStyles'
 
 interface NavbarProps {
   onCartToggle: () => void
   isCartOpen: boolean
+  userName?: string
+  onLogout?: () => void
 }
 
-const Navbar = ({ onCartToggle, isCartOpen }: NavbarProps) => {
-  const { user, logoutUser } = useAuth()
-  const navigate = useNavigate()
-
+const Navbar: React.FC<NavbarProps> = ({ onCartToggle, isCartOpen, userName, onLogout }) => {
   return (
     <TopBar>
-      <div>🏠 Home</div>
+      <Logo>Minha Loja</Logo>
 
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        {user ? (
-          <>
-            <Button className="logout" onClick={logoutUser}>Logout</Button>
-            <NavButton color="#28a745" onClick={() => navigate('/profile')}>Perfil</NavButton>
-            <NavButton color="#ff6600" onClick={onCartToggle}>
-              {isCartOpen ? 'Fechar Carrinho' : '🛒 Carrinho'}
-            </NavButton>
-          </>
-        ) : (
-          <>
-            <Button className="login" onClick={() => navigate('/login')}>Login</Button>
-            <Button className="register" onClick={() => navigate('/register')}>Criar Conta</Button>
-          </>
+      <NavLinks>
+        {userName && <span>Olá, {userName}</span>}
+
+        {userName && onLogout && (
+          <NavButton onClick={onLogout} color="#f44336">
+            Logout
+          </NavButton>
         )}
-      </div>
+
+        <NavButton onClick={onCartToggle} className="cart">
+          {isCartOpen ? 'Fechar Carrinho' : 'Abrir Carrinho'}
+        </NavButton>
+      </NavLinks>
     </TopBar>
   )
 }
