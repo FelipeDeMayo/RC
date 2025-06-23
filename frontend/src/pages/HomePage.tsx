@@ -8,7 +8,6 @@ import ProductCard from '../components/ProductCard'
 import CartModal from '../components/CartModal'
 import Navbar from '../components/Navbar'
 
-// Importa o hook do contexto do carrinho
 import { useCart } from '../contexts/useCart'
 
 interface Product {
@@ -24,7 +23,6 @@ const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
 
-  // Pega os itens do carrinho do contexto
   const { cartItems } = useCart()
 
   useEffect(() => {

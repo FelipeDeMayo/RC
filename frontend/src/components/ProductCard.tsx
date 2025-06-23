@@ -4,7 +4,8 @@ import {
   Image,
   Title,
   Description,
-  Price
+  Price,
+  AddButton
 } from '../styles/ProductCardStyles'
 
 interface ProductCardProps {
@@ -33,23 +34,14 @@ const ProductCard = ({ id, name, description, price, image, onAddToCart }: Produ
         <Price>R$ {price.toFixed(2)}</Price>
 
         {onAddToCart && (
-          <button
+          <AddButton
             onClick={e => {
-              e.preventDefault() 
+              e.preventDefault()
               onAddToCart()
-            }}
-            style={{
-              marginTop: '10px',
-              padding: '8px 12px',
-              backgroundColor: '#007bff',
-              border: 'none',
-              color: '#fff',
-              borderRadius: '5px',
-              cursor: 'pointer',
             }}
           >
             Adicionar ao carrinho
-          </button>
+          </AddButton>
         )}
       </Card>
     </Link>

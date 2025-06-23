@@ -1,6 +1,7 @@
 import { useAuth } from '../contexts/useAuth'
 import { useNavigate } from 'react-router-dom'
 import { TopBar, Button } from '../styles/HomePageStyles'
+import { NavButton } from '../styles/NavBarStyles'
 
 interface NavbarProps {
   onCartToggle: () => void
@@ -19,7 +20,10 @@ const Navbar = ({ onCartToggle, isCartOpen }: NavbarProps) => {
         {user ? (
           <>
             <Button className="logout" onClick={logoutUser}>Logout</Button>
-            <Button onClick={() => navigate('/profile')}>Perfil</Button>
+            <NavButton color="#28a745" onClick={() => navigate('/profile')}>Perfil</NavButton>
+            <NavButton color="#ff6600" onClick={onCartToggle}>
+              {isCartOpen ? 'Fechar Carrinho' : '🛒 Carrinho'}
+            </NavButton>
           </>
         ) : (
           <>
@@ -27,9 +31,6 @@ const Navbar = ({ onCartToggle, isCartOpen }: NavbarProps) => {
             <Button className="register" onClick={() => navigate('/register')}>Criar Conta</Button>
           </>
         )}
-        <Button onClick={onCartToggle}>
-          {isCartOpen ? 'Fechar Carrinho' : '🛒 Carrinho'}
-        </Button>
       </div>
     </TopBar>
   )

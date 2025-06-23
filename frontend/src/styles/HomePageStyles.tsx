@@ -1,16 +1,20 @@
 import styled from 'styled-components'
 import { FaUserCircle } from 'react-icons/fa'
 
-export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #f9f9f9;
-  padding: 2rem;
-  text-align: center;
+export const Container = styled.main`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
 `
+
+export const ProductsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+`
+
 export const ProfileContainer = styled.div`
   display: flex;
   align-items: center;
@@ -21,6 +25,7 @@ export const ProfileContainer = styled.div`
   margin-bottom: 0.5rem;
   padding-right: 1rem;
 `
+
 export const ProfileIcon = styled(FaUserCircle)`
   color: #007bff;
   width: 24px;
@@ -30,6 +35,8 @@ export const ProfileIcon = styled(FaUserCircle)`
 export const Title = styled.h1`
   font-size: 2.5rem;
   color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
 `
 
 export const Description = styled.p`
@@ -82,8 +89,9 @@ export const Button = styled.button`
 export const TopBar = styled.div`
   position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  max-width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -91,6 +99,5 @@ export const TopBar = styled.div`
   padding: 1rem 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  box-sizing: border-box;
 `
-
-
