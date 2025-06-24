@@ -12,22 +12,25 @@ export interface User {
   name: string
   email: string
   role: string
-  token?: string // será adicionada manualmente após login
+  token?: string
 }
 
 interface LoginResponse {
-  accessToken: string
-  user: User
+  accessToken: string;
+  refreshToken: string; 
+  user: User;
 }
 
+
 export async function login(data: { email: string; password: string }): Promise<User> {
-  const response = await api.post<LoginResponse>('/auth/login', data)
+  const response = await api.post<LoginResponse>('/auth/login', data);
   console.log('🔍 Resposta da API de login:', response.data)
 
-  const { accessToken, user } = response.data
+  const { accessToken, refreshToken, user } = response.data
   const userWithToken: User = { ...user, token: accessToken }
 
   localStorage.setItem('token', accessToken)
+  localStorage.setItem('refreshToken', refreshToken);
   localStorage.setItem('user', JSON.stringify(userWithToken))
 
   return userWithToken

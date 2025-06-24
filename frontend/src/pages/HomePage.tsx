@@ -1,13 +1,8 @@
-import { useEffect, useState } from 'react'
-import {
-  Container,
-  Title
-} from '../styles/HomePageStyles'
+import React, { useEffect, useState } from 'react'
+import styled from 'styled-components'
 import { useAuth } from '../contexts/useAuth'
 import ProductCard from '../components/ProductCard'
 import CartModal from '../components/CartModal'
-import Navbar from '../components/Navbar'
-
 import { useCart } from '../contexts/useCart'
 
 interface Product {
@@ -18,35 +13,53 @@ interface Product {
   image?: string
 }
 
-const HomePage = () => {
-  const { user, token } = useAuth()  // pegue token separado
+const Container = styled.main`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+`
+
+const Title = styled.h1`
+  font-size: 2.5rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+`
+
+const ProductsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+`
+
+const HomePage: React.FC = () => {
+  const { user, token } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
-
   const { cartItems } = useCart()
 
   useEffect(() => {
-  const headers: HeadersInit = {}
+    const headers: HeadersInit = {}
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
 
-  fetch('http://localhost:3000/api/products', { headers })
-    .then(async res => {
-      if (!res.ok) {
-        const text = await res.text()
-        throw new Error(`Erro HTTP ${res.status}: ${text}`)
-      }
-      return res.json()
-    })
-    .then(data => {
-      console.log('🔍 Produtos recebidos:', data)
-      setProducts(Array.isArray(data) ? data : [])
-    })
-    .catch(err => console.error('❌ Erro ao buscar produtos:', err))
-}, [token])
-
+    fetch('http://localhost:3000/api/products', { headers })
+      .then(async res => {
+        if (!res.ok) {
+          const text = await res.text()
+          throw new Error(`Erro HTTP ${res.status}: ${text}`)
+        }
+        return res.json()
+      })
+      .then(data => {
+        setProducts(Array.isArray(data) ? data : [])
+      })
+      .catch(err => console.error('Erro ao buscar produtos:', err))
+  }, [token])
 
   const toggleCart = () => {
     setIsCartOpen(prev => !prev)
@@ -54,7 +67,6 @@ const HomePage = () => {
 
   return (
     <>
-      <Navbar onCartToggle={toggleCart} isCartOpen={isCartOpen} />
       {isCartOpen && <CartModal items={cartItems} onClose={toggleCart} />}
 
       <Container style={{ paddingTop: '100px' }}>
@@ -62,15 +74,7 @@ const HomePage = () => {
           {user ? `🛍️ Bem-vindo, ${user.name}!` : '🛍️ Produtos disponíveis:'}
         </Title>
 
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '1rem',
-            justifyContent: 'center',
-            marginTop: '2rem',
-          }}
-        >
+        <ProductsGrid>
           {products.length > 0 ? (
             products.map(product => (
               <ProductCard
@@ -85,7 +89,7 @@ const HomePage = () => {
           ) : (
             <p>Nenhum produto encontrado.</p>
           )}
-        </div>
+        </ProductsGrid>
       </Container>
     </>
   )

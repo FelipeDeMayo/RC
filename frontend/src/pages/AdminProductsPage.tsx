@@ -1,5 +1,14 @@
-import { useEffect, useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
+// src/pages/AdminProductsPage.tsx - VERSÃO FINAL
+
+import { useEffect, useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
+
+import {
+  getAllProducts,
+  deleteProduct,
+  updateProduct,
+  createProduct,
+} from '../services/productService'; 
 
 import {
   Container,
@@ -15,111 +24,99 @@ import {
   ProductImage,
   Actions,
   ActionButton,
-} from '../styles/AdminProductPage'
+} from '../styles/AdminProductPage';
 
 interface Product {
-  id: number
-  name: string
-  description: string
-  price: number
-  image?: string
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
 }
 
 const AdminProductsPage = () => {
-  const [products, setProducts] = useState<Product[]>([])
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [form, setForm] = useState({ name: '', description: '', price: '' })
-  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [products, setProducts] = useState<Product[]>([]);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [form, setForm] = useState({ name: '', description: '', price: '' });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    fetchProducts()
-  }, [])
+    fetchProducts();
+  }, []);
 
-  const fetchProducts = () => {
-    fetch('http://localhost:3000/pruducts', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((res) => res.json())
-      .then(setProducts)
-      .catch((err) => console.error('Erro ao buscar produtos:', err))
-  }
+  const fetchProducts = async () => {
+    try {
+      const data = await getAllProducts();
+      setProducts(data);
+    } catch (err) {
+      console.error('Erro ao buscar produtos:', err);
+    }
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setImageFile(e.target.files[0])
+      setImageFile(e.target.files[0]);
     }
-  }
+  };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     if (!form.name || !form.description || !form.price) {
-      alert('Preencha todos os campos obrigatórios')
-      return
+      alert('Preencha todos os campos obrigatórios');
+      return;
     }
 
-    const formData = new FormData()
-    formData.append('name', form.name)
-    formData.append('description', form.description)
-    formData.append('price', form.price)
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('description', form.description);
+    formData.append('price', form.price);
     if (imageFile) {
-      formData.append('image', imageFile)
+      formData.append('image', imageFile);
     }
 
-    const method = editingProduct ? 'PUT' : 'POST'
-    const url = editingProduct
-      ? `http://localhost:3000/api/products/${editingProduct.id}`
-      : 'http://localhost:3000/api/products'
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, formData);
+      } else {
+        await createProduct(formData);
+      }
+      
+      setForm({ name: '', description: '', price: '' });
+      setImageFile(null);
+      setEditingProduct(null);
+      fetchProducts();
+    } catch (err) {
+      console.error('Erro ao salvar produto:', err);
+      alert('Falha ao salvar produto. Verifique o console.');
+    }
+  };
 
-    fetch(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: formData,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Erro ao salvar produto')
-        return res.json()
-      })
-      .then(() => {
-        setForm({ name: '', description: '', price: '' })
-        setImageFile(null)
-        setEditingProduct(null)
-        fetchProducts()
-      })
-      .catch((err) => console.error('Erro ao salvar produto:', err))
-  }
-
-  const handleDelete = (id: number) => {
-    if (!window.confirm('Tem certeza que deseja excluir este produto?')) return
-
-    fetch(`http://localhost:3000/api/products/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then(() => setProducts(products.filter((p) => p.id !== id)))
-      .catch((err) => console.error('Erro ao deletar produto:', err))
-  }
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Tem certeza que deseja excluir este produto?')) return;
+    try {
+      await deleteProduct(id);
+      setProducts(products.filter((p) => p.id !== id));
+    } catch (err) {
+      console.error('Erro ao deletar produto:', err);
+      alert('Falha ao deletar produto. Verifique o console.');
+    }
+  };
 
   const handleEdit = (product: Product) => {
-    setEditingProduct(product)
+    setEditingProduct(product);
     setForm({
       name: product.name,
       description: product.description,
       price: String(product.price),
-    })
-    setImageFile(null)
-  }
+    });
+    setImageFile(null);
+  };
 
+  // O CÓDIGO JSX QUE ESTAVA FALTANDO É ESTE:
   return (
     <Container>
       <Title>Painel de Produtos (Admin)</Title>
@@ -160,12 +157,12 @@ const AdminProductsPage = () => {
           </Button>
           {editingProduct && (
             <Button
-              cancel
+              cancel 
               type="button"
               onClick={() => {
-                setEditingProduct(null)
-                setForm({ name: '', description: '', price: '' })
-                setImageFile(null)
+                setEditingProduct(null);
+                setForm({ name: '', description: '', price: '' });
+                setImageFile(null);
               }}
             >
               Cancelar Edição
@@ -198,7 +195,7 @@ const AdminProductsPage = () => {
         ))}
       </ProductsList>
     </Container>
-  )
-}
+  );
+};
 
-export default AdminProductsPage
+export default AdminProductsPage;

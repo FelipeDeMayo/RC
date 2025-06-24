@@ -1,15 +1,8 @@
-import { createContext, useState, useEffect } from 'react'
+// src/contexts/AuthContext.tsx
+import { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import type { User } from '../types/User'
-
-interface AuthContextType {
-  user: User | null
-  token: string | null
-  setUser: (user: User | null, token?: string | null) => void
-  logoutUser: () => void
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+import { AuthContext } from './AuthContextData'
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null)
@@ -60,5 +53,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   )
 }
-
-export { AuthContext }

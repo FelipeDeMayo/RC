@@ -1,33 +1,59 @@
 import React from 'react'
 import {
   NavButton,
+  TopBar,
   Logo,
-  NavLinks,
-  TopBar
-} from '../styles/NavBarStyles'
+  NavLinks
+} from '../styles/HeaderStyles'
 
 interface NavbarProps {
   onCartToggle: () => void
   isCartOpen: boolean
   userName?: string
   onLogout?: () => void
+  onLogin?: () => void
+  onRegister?: () => void
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onCartToggle, isCartOpen, userName, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  onCartToggle,
+  isCartOpen,
+  userName,
+  onLogout,
+  onLogin,
+  onRegister
+}) => {
   return (
     <TopBar>
-      <Logo>Minha Loja</Logo>
+      <Logo>RC Fitness</Logo>
 
       <NavLinks>
-        {userName && <span>Olá, {userName}</span>}
+        {userName ? (
+          <>
+            <span>Olá, {userName}</span>
 
-        {userName && onLogout && (
-          <NavButton onClick={onLogout} color="#f44336">
-            Logout
-          </NavButton>
+            {onLogout && (
+              <NavButton className="logout" onClick={onLogout}>
+                Sair
+              </NavButton>
+            )}
+          </>
+        ) : (
+          <>
+            {onLogin && (
+              <NavButton className="login" onClick={onLogin}>
+                Entrar
+              </NavButton>
+            )}
+            {onRegister && (
+              <NavButton className="register" onClick={onRegister}>
+                Cadastrar
+              </NavButton>
+            )}
+          </>
         )}
 
-        <NavButton onClick={onCartToggle} className="cart">
+        <NavButton className="cart" onClick={onCartToggle}>
           {isCartOpen ? 'Fechar Carrinho' : 'Abrir Carrinho'}
         </NavButton>
       </NavLinks>

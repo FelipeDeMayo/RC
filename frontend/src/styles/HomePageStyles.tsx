@@ -49,39 +49,3 @@ export const ButtonGroup = styled.div`
   display: flex;
   gap: 1rem;
 `
-
-export const Button = styled.button`
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  color: #fff;
-
-
-  &.login {
-    background-color: #007bff;
-  }
-
-  &.login:hover {
-    background-color: #0056b3;
-  }
-
-  &.register {
-    background-color: #28a745;
-  }
-
-  &.register:hover {
-    background-color: #1e7e34;
-  }
-  &.logout {
-    background-color: #e74c3c; 
-    color: white;
-    margin-right: 1rem;
-
-    &:hover {
-      background-color: #c0392b;
-    }
-  }
-`

@@ -9,12 +9,14 @@ const verifyToken = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+  console.log('[VERIFY] Chave usada para VERIFICAR o token:', JWT_SECRET);
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
+    console.error('[VERIFY] Erro na verificação do JWT:', error.message);
     return res.status(401).json({ error: 'Token inválido.' });
   }
 };

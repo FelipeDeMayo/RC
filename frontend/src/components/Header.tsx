@@ -1,46 +1,52 @@
-// src/components/Header.tsx
 import { Link } from 'react-router-dom'
-import { useContext } from 'react'
-import { CartContext } from '../contexts/CartContextType'
-import { useAuth } from '../contexts/useAuth'
-
 import {
   TopBar,
   NavLinks,
   NavButton,
-  Logo
-} from '../styles/NavBarStyles'
+  Logo,
+  LogoLink
+} from '../styles/HeaderStyles'
 
-const Header = () => {
-  const { user, logoutUser } = useAuth()
-  const cart = useContext(CartContext)
+interface HeaderProps {
+  onCartToggle: () => void
+  isCartOpen: boolean
+  userName?: string
+  onLogout?: () => void
+}
 
-  const totalItems = cart?.cartItems.reduce((acc, item) => acc + item.quantity, 0) || 0
-
+const Header: React.FC<HeaderProps> = ({
+  onCartToggle,
+  isCartOpen,
+  userName,
+  onLogout
+}) => {
   return (
     <TopBar>
       <Logo>
-        <Link to="/">🏠 Home</Link>
+        <LogoLink to="/">🏠 Home</LogoLink>
       </Logo>
 
       <NavLinks>
-        <NavButton className="cart" as={Link} to="/cart">
-          🛒 Carrinho ({totalItems})
+        <NavButton className="cart" onClick={onCartToggle}>
+          {isCartOpen ? '🛒 Fechar Carrinho' : '🛒 Abrir Carrinho'}
         </NavButton>
 
-        {user && <span>{user.name}</span>}
-
-        {user ? (
-          <NavButton onClick={logoutUser} color="#f44336">
-            Sair
-          </NavButton>
+        {userName ? (
+          <>
+            <span>Olá, {userName}</span>
+            {onLogout && (
+              <NavButton className="logout" onClick={onLogout}>
+                Sair
+              </NavButton>
+            )}
+          </>
         ) : (
           <>
-            <NavButton as={Link} to="/login">
-              Login
+            <NavButton as={Link} to="/login" className="login">
+              Entrar
             </NavButton>
-            <NavButton as={Link} to="/register">
-              Criar Conta
+            <NavButton as={Link} to="/register" className="register">
+              Cadastrar
             </NavButton>
           </>
         )}
