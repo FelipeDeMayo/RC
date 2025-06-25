@@ -1,72 +1,65 @@
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+// src/styles/HeaderStyles.ts
+
+import styled, { css } from 'styled-components';
+import { Link } from 'react-router-dom';
 
 interface NavButtonProps {
-  color?: string
+  variant?: 'primary' | 'secondary' | 'ghost';
 }
 
 export const NavButton = styled.button<NavButtonProps>`
-  background-color: transparent;
-  border: none;
+  border: 2px solid transparent;
   min-width: 120px;
   text-align: center;
   font-weight: bold;
   cursor: pointer;
-  padding: 8px 12px;
-  transition: 0.3s ease;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
   white-space: nowrap;
   border-radius: 8px;
-
-  color: ${({ color }) => color || '#FF69B4'};
-
-  text-decoration: none;
-  outline: none;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   &:focus,
   &:active {
     outline: none;
-    text-decoration: none;
     box-shadow: none;
   }
-
-  &:hover {
-    text-decoration: none;
-    opacity: 0.95;
-    transform: scale(1.02);
-  }
-
-  &.cart {
-    margin-right: auto;
-    color: #C2185B;
-  }
-
-  &.login {
-    background-color: #FF69B4;
-    color: white;
-  }
-
-  &.login:hover {
-    background-color: #C2185B;
-  }
-
-  &.register {
-    background-color: #FFD6E8;
-    color: #C2185B;
-  }
-
-  &.register:hover {
-    background-color: #FFB6D0;
-  }
-
-  &.logout {
-    background-color: #C2185B;
-    color: white;
-  }
-
-  &.logout:hover {
-    background-color: #A11045;
-  }
-`
+  ${({ variant }) => {
+    switch (variant) {
+      case 'primary':
+        return css`
+          background-color: #C2185B;
+          color: white;
+          &:hover {
+            background-color: #A11045;
+            transform: scale(1.02);
+          }
+        `;
+      case 'secondary':
+        return css`
+          background-color: #FFD6E8;
+          color: #C2185B;
+          &:hover {
+            background-color: #FFB6D0;
+            transform: scale(1.02);
+          }
+        `;
+      case 'ghost':
+      default:
+        return css`
+          background-color: transparent;
+          color: #C2185B;
+          &:hover {
+            background-color: rgba(194, 24, 91, 0.05);
+            transform: scale(1.02);
+          }
+        `;
+    }
+  }}
+`;
 
 export const TopBar = styled.header`
   display: flex;
@@ -74,40 +67,11 @@ export const TopBar = styled.header`
   align-items: center;
   padding: 1rem 2rem;
   background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
-`
-
-export const Logo = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  color: #C2185B;
-  user-select: none;
-
-  &:hover {
-    color: #FF69B4;
-    transition: 0.3s ease;
-  }
-`
-
-export const NavLinks = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    background: white;
-    position: absolute;
-    top: 60px;
-    right: 0;
-    width: 100%;
-    padding: 1rem;
-  }
-`
+`;
 
 export const LogoLink = styled(Link)`
   color: #C2185B;
@@ -116,18 +80,78 @@ export const LogoLink = styled(Link)`
   text-decoration: none;
   user-select: none;
   cursor: pointer;
+  transition: color 0.3s ease;
 
   &:hover {
     color: #FF69B4;
-    transition: 0.3s ease;
+  }
+`;
+
+export const NavLinks = styled.nav`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  .user-greeting {
+    color: #555;
+    font-weight: 500;
   }
 
-  &:focus,
-  &:active,
-  &:visited {
-    outline: none;
-    box-shadow: none;
-    text-decoration: none;
-    color: #C2185B;
+  @media (max-width: 768px) {
+    display: none;
+    
+    &.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      background: white;
+      position: absolute;
+      top: 70px; 
+      right: 0;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
   }
-`
+`;
+
+export const HamburgerButton = styled.button`
+  display: none; 
+  background: transparent;
+  border: none;
+  color: #C2185B;
+  cursor: pointer;
+  z-index: 1001; 
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+// ADICIONADO: Estilo para o contêiner do botão do carrinho
+export const CartButtonWrapper = styled.div`
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #c2185b;
+`;
+
+// ADICIONADO: Estilo para o número de itens no carrinho
+export const CartBadge = styled.span`
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #c2185b;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  border: 2px solid white;
+`;

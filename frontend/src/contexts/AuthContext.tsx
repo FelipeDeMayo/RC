@@ -1,55 +1,64 @@
-// src/contexts/AuthContext.tsx
-import { useState, useEffect } from 'react'
-import type { ReactNode } from 'react'
-import type { User } from '../types/User'
-import { AuthContext } from './AuthContextData'
+import { useState, useEffect, type ReactNode } from 'react'; 
+import type { User } from '../services/authService'; 
+import { AuthContext, type AuthContextData } from './AuthContextData'; 
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUserState] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    const storedToken = localStorage.getItem('token')
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-    if (storedUser && storedUser !== 'undefined') {
+    if (storedToken && storedUser) {
       try {
-        const parsedUser: User = JSON.parse(storedUser)
-        setUserState(parsedUser)
-        if (parsedUser.token) setToken(parsedUser.token)
+        const parsedUser: User = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setToken(storedToken);
+        setIsAuthenticated(true);
       } catch (error) {
-        console.error('Erro ao parse do usuário salvo:', error)
-        localStorage.removeItem('user')
+        console.error('Falha ao carregar dados do usuário:', error);
+        localStorage.clear();
+        setIsAuthenticated(false); 
       }
     }
+    setLoading(false);
+  }, []);
 
-    if (storedToken) setToken(storedToken)
-    setLoading(false)
-  }, [])
-
-  const setUser = (user: User | null, tokenValue?: string | null) => {
-    setUserState(user)
-    if (user && tokenValue) {
-      localStorage.setItem('user', JSON.stringify(user))
-      localStorage.setItem('token', tokenValue)
-      setToken(tokenValue)
-    } else {
-      localStorage.removeItem('user')
-      localStorage.removeItem('token')
-      setToken(null)
-    }
-  }
+  const login = (userData: User, receivedToken: string) => {
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', receivedToken);
+    setUser(userData);
+    setToken(receivedToken);
+    setIsAuthenticated(true); 
+  };
 
   const logoutUser = () => {
-    setUser(null)
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+    setToken(null);
+    setIsAuthenticated(false); 
+  };
+
+  if (loading) {
+    return <p style={{ textAlign: 'center', marginTop: '2rem' }}>Carregando aplicação...</p>;
   }
 
-  if (loading) return <p>Carregando...</p>
+  const contextValue: AuthContextData = {
+    user,
+    token,
+    loading,
+    login,
+    logoutUser,
+    isAuthenticated,
+  };
 
   return (
-    <AuthContext.Provider value={{ user, token, setUser, logoutUser }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};

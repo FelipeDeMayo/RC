@@ -1,36 +1,48 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { login } from '../services/authService'
-import { useAuth } from '../contexts/useAuth'
-import { AxiosError } from 'axios'
-import { toast } from 'react-toastify'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { login as loginService } from '../services/authService';
+import { useAuth } from '../contexts/useAuth';
+import { AxiosError } from 'axios';
+import { toast } from 'react-toastify';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const { setUser } = useAuth()
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login } = useAuth();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
-      const user = await login({ email, password })
-      setUser(user, user.token)
-      toast.success('Login realizado com sucesso!')
-      navigate('/')
-    } catch (err) {
-      const error = err as AxiosError
-      console.error('Erro ao logar:', error.response?.data || error.message)
-      setError('Credenciais inválidas')
+      const user = await loginService({ email, password });
+      if (user && user.token) {
+        login(user, user.token);
+        toast.success('Login realizado com sucesso!');
+        navigate('/');
+      } else {
+        throw new Error('Resposta da API inválida: token não encontrado.');
+      }
+    } catch (err: unknown) {
+      let errorMessage = 'Credenciais inválidas ou erro no servidor.';
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = 'Ocorreu um erro desconhecido.';
+      }
+
+      console.error('Erro ao logar:', err);
+      setError(errorMessage);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -62,7 +74,7 @@ const LoginPage: React.FC = () => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

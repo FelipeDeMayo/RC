@@ -1,11 +1,13 @@
-import { createContext } from 'react'
-import type { User } from '../types/User'
+import { createContext } from 'react';
+import type { User } from '../services/authService'; 
 
-export interface AuthContextType {
-  user: User | null
-  token: string | null
-  setUser: (user: User | null, token?: string | null) => void
-  logoutUser: () => void
+export interface AuthContextData { 
+  user: User | null;
+  token: string | null;
+  loading: boolean;
+  login: (userData: User, receivedToken: string) => void;
+  logoutUser: () => void;
+  isAuthenticated: boolean; // <-- ADICIONADO!
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = createContext<AuthContextData | undefined>(undefined);

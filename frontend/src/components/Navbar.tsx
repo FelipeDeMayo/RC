@@ -1,18 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react';
 import {
   NavButton,
   TopBar,
-  Logo,
-  NavLinks
-} from '../styles/HeaderStyles'
+  LogoLink, 
+  NavLinks,
+  HamburgerButton 
+} from '../styles/HeaderStyles';
+import { FaShoppingCart, FaBars, FaTimes } from 'react-icons/fa';
 
 interface NavbarProps {
-  onCartToggle: () => void
-  isCartOpen: boolean
-  userName?: string
-  onLogout?: () => void
-  onLogin?: () => void
-  onRegister?: () => void
+  onCartToggle: () => void;
+  isCartOpen: boolean;
+  userName?: string;
+  onLogout?: () => void;
+  onLogin?: () => void;
+  onRegister?: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -23,17 +25,22 @@ const Navbar: React.FC<NavbarProps> = ({
   onLogin,
   onRegister
 }) => {
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <TopBar>
-      <Logo>RC Fitness</Logo>
-
-      <NavLinks>
+      <LogoLink to="/">RC Fitness</LogoLink>
+      <NavLinks className={isMobileMenuOpen ? 'active' : ''}>
         {userName ? (
           <>
-            <span>Olá, {userName}</span>
+            <span className="user-greeting">Olá, {userName}</span>
 
             {onLogout && (
-              <NavButton className="logout" onClick={onLogout}>
+              <NavButton variant="primary" onClick={onLogout}>
                 Sair
               </NavButton>
             )}
@@ -41,24 +48,29 @@ const Navbar: React.FC<NavbarProps> = ({
         ) : (
           <>
             {onLogin && (
-              <NavButton className="login" onClick={onLogin}>
+              <NavButton variant="secondary" onClick={onLogin}>
                 Entrar
               </NavButton>
             )}
             {onRegister && (
-              <NavButton className="register" onClick={onRegister}>
+              <NavButton variant="primary" onClick={onRegister}>
                 Cadastrar
               </NavButton>
             )}
           </>
         )}
-
-        <NavButton className="cart" onClick={onCartToggle}>
-          {isCartOpen ? 'Fechar Carrinho' : 'Abrir Carrinho'}
-        </NavButton>
+        <NavButton variant="ghost" onClick={onCartToggle}>
+            <FaShoppingCart size={22} />
+            <span style={{ marginLeft: '8px' }}>
+              {isCartOpen ? 'Fechar' : 'Carrinho'}
+            </span>
+          </NavButton>
       </NavLinks>
+      <HamburgerButton onClick={toggleMobileMenu}>
+        {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </HamburgerButton>
     </TopBar>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
