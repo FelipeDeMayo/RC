@@ -1,109 +1,99 @@
-// src/contexts/CartProvider.tsx
+import { useState, useEffect, useCallback } from 'react';
+import { CartContext, type CartContextType, type ProductWithQuantity } from './CartContextType';
+import { getCart, addItemToCart, removeItemFromCart, type CartItemResponse } from '../services/cartService';
+import type { Product } from '../types/Product';
 
-import { useState, useEffect } from 'react'
-import type { ReactNode } from 'react'
-import type { Product } from '../types/Product'
-import { CartContext, type CartContextType, type ProductWithQuantity } from './CartContextType'
-import { useAuth } from '../contexts/useAuth'
-import { getCart, addItemToCart, removeItemFromCart, type CartItemResponse } from '../services/cartService'
+export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+  const [cartItems, setCartItems] = useState<ProductWithQuantity[]>([]);
+  const [loading, setLoading] = useState(true);
 
-type Props = {
-  children: ReactNode
-}
+  const handleUnauthorized = useCallback(() => {
+    // Limpa o estado de autenticação
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  }, []);
 
-export const CartProvider = ({ children }: Props) => {
-  const { user } = useAuth()
-  const [cartItems, setCartItems] = useState<ProductWithQuantity[]>([])
-  const [loading, setLoading] = useState(true)
+  const loadCart = useCallback(async () => {
+    // Esta função busca os dados do backend e atualiza o estado local
+    try {
+      setLoading(true);
+      const cartResponse = await getCart();
+
+      if (cartResponse && Array.isArray(cartResponse.items)) {
+        const formattedItems = cartResponse.items.map((apiItem: CartItemResponse) => ({
+          id: apiItem.productId,
+          name: apiItem.name,
+          price: apiItem.price,
+          quantity: apiItem.quantity,
+          image: apiItem.image,
+          description: '',
+        }));
+        setCartItems(formattedItems);
+      } else {
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar carrinho do backend:', error);
+      if (error instanceof Error && String(error).includes('401')) {
+        handleUnauthorized();
+      } else {
+        setCartItems([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [handleUnauthorized]);
 
   useEffect(() => {
-    const loadCart = async () => {
-      if (!user) {
-        setCartItems([])
-        setLoading(false)
-        return
-      }
-      try {
-        setLoading(true)
-        const cartData = await getCart();
-
-        // **A CORREÇÃO ESTÁ AQUI**
-        // Verificamos se a resposta da API tem o formato esperado antes de usá-la.
-        if (cartData && Array.isArray(cartData.items)) {
-          const formattedItems = cartData.items.map((apiItem: CartItemResponse) => ({
-            id: apiItem.productId,
-            name: apiItem.name,
-            price: apiItem.price,
-            description: '',
-            image: apiItem.image,
-            quantity: apiItem.quantity
-          }));
-          setCartItems(formattedItems);
-        } else {
-          // Se a API não retornar um carrinho (ex: usuário novo), definimos como vazio.
-          setCartItems([]);
-        }
-
-      } catch (error) {
-        console.error('Erro ao carregar carrinho do backend:', error)
-        setCartItems([])
-      } finally {
-        setLoading(false)
-      }
+    const token = localStorage.getItem('token');
+    if (token) {
+      loadCart();
+    } else {
+      setLoading(false);
+      setCartItems([]);
     }
-    loadCart()
-  }, [user])
+  }, [loadCart]);
 
-  // As funções abaixo não precisam de alteração
   const addToCart = async (product: Product) => {
     try {
-      await addItemToCart(product.id, 1)
-      setCartItems(prev => {
-        const exists = prev.find(p => p.id === product.id)
-        if (exists) {
-          return prev.map(p =>
-            p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
-          )
-        }
-        return [...prev, { ...product, quantity: 1 }]
-      })
+      await addItemToCart(product.id, 1);
+      await loadCart(); 
     } catch (error) {
-      console.error('Erro ao adicionar item no backend:', error)
+      console.error('Erro ao adicionar item no backend:', error);
+      if (error instanceof Error && String(error).includes('401')) {
+        handleUnauthorized();
+      }
     }
-  }
+  };
 
   const removeFromCart = async (id: number) => {
     try {
-      await removeItemFromCart(id)
-      setCartItems(prev =>
-        prev.flatMap(item => {
-          if (item.id === id) {
-            return item.quantity > 1 ? [{ ...item, quantity: item.quantity - 1 }] : []
-          }
-          return [item]
-        })
-      )
+      await removeItemFromCart(id);
+      await loadCart(); 
     } catch (error) {
-      console.error('Erro ao remover item no backend:', error)
+      console.error('Erro ao remover item no backend:', error);
+      if (error instanceof Error && String(error).includes('401')) {
+        handleUnauthorized();
+      }
     }
-  }
+  };
 
   const clearCart = () => {
-    setCartItems([])
-  }
-
-  if (loading) return <p>Carregando carrinho...</p>
-
+    setCartItems([]);
+  };
   const contextValue: CartContextType = {
     cartItems,
+    loading,
     addToCart,
     removeFromCart,
     clearCart,
-  }
+  };
 
   return (
     <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
-  )
-}
+  );
+};
