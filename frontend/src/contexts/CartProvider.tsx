@@ -1,9 +1,11 @@
+// src/contexts/CartProvider.tsx
+
 import { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import type { Product } from '../types/Product'
 import { CartContext, type CartContextType, type ProductWithQuantity } from './CartContextType'
 import { useAuth } from '../contexts/useAuth'
-import { getCart, addItemToCart, removeItemFromCart } from '../services/cartService'
+import { getCart, addItemToCart, removeItemFromCart, type CartItemResponse } from '../services/cartService'
 
 type Props = {
   children: ReactNode
@@ -18,14 +20,30 @@ export const CartProvider = ({ children }: Props) => {
     const loadCart = async () => {
       if (!user) {
         setCartItems([])
-        localStorage.removeItem('cart')
         setLoading(false)
         return
       }
       try {
         setLoading(true)
-        const items = await getCart()
-        setCartItems(items)
+        const cartData = await getCart();
+
+        // **A CORREÇÃO ESTÁ AQUI**
+        // Verificamos se a resposta da API tem o formato esperado antes de usá-la.
+        if (cartData && Array.isArray(cartData.items)) {
+          const formattedItems = cartData.items.map((apiItem: CartItemResponse) => ({
+            id: apiItem.productId,
+            name: apiItem.name,
+            price: apiItem.price,
+            description: '',
+            image: apiItem.image,
+            quantity: apiItem.quantity
+          }));
+          setCartItems(formattedItems);
+        } else {
+          // Se a API não retornar um carrinho (ex: usuário novo), definimos como vazio.
+          setCartItems([]);
+        }
+
       } catch (error) {
         console.error('Erro ao carregar carrinho do backend:', error)
         setCartItems([])
@@ -36,12 +54,13 @@ export const CartProvider = ({ children }: Props) => {
     loadCart()
   }, [user])
 
+  // As funções abaixo não precisam de alteração
   const addToCart = async (product: Product) => {
     try {
       await addItemToCart(product.id, 1)
       setCartItems(prev => {
-        const existing = prev.find(p => p.id === product.id)
-        if (existing) {
+        const exists = prev.find(p => p.id === product.id)
+        if (exists) {
           return prev.map(p =>
             p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
           )
@@ -59,11 +78,7 @@ export const CartProvider = ({ children }: Props) => {
       setCartItems(prev =>
         prev.flatMap(item => {
           if (item.id === id) {
-            if (item.quantity > 1) {
-              return [{ ...item, quantity: item.quantity - 1 }]
-            } else {
-              return []
-            }
+            return item.quantity > 1 ? [{ ...item, quantity: item.quantity - 1 }] : []
           }
           return [item]
         })
@@ -75,7 +90,6 @@ export const CartProvider = ({ children }: Props) => {
 
   const clearCart = () => {
     setCartItems([])
-    localStorage.removeItem('cart')
   }
 
   if (loading) return <p>Carregando carrinho...</p>

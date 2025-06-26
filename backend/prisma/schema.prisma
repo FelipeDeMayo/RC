@@ -26,11 +26,13 @@ model User {
 
 model RefreshToken {
   id        String   @id @default(cuid())
-  token     String   @unique
+  token     String   @db.Text
   expiresIn DateTime
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
+  @@unique([token(length: 255)])
 }
 
 model Product {

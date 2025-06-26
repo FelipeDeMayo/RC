@@ -48,6 +48,11 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Credenciais inválidas.' });
     
+    console.log("=============================================");
+    console.log("SEGREDO USADO PARA ACCESS TOKEN:", process.env.JWT_SECRET);
+    console.log("SEGREDO USADO PARA REFRESH TOKEN:", process.env.REFRESH_TOKEN_SECRET);
+    console.log("=============================================");
+    
     const accessToken = jwt.sign(
       { userId: user.id, role: user.role },
       JWT_SECRET,

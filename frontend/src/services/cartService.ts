@@ -1,51 +1,30 @@
-const API_URL = 'http://localhost:3000/cart';
+import api from './api';
 
-const getToken = () => {
-  return localStorage.getItem('token');
+export interface CartItemResponse {
+  productId: number;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+}
+
+export interface GetCartFullResponse {
+  items: CartItemResponse[];
+  totalItems: number;
+  totalPrice: number;
+}
+
+export const getCart = async (): Promise<GetCartFullResponse> => {
+  const response = await api.get<GetCartFullResponse>('/cart');
+  return response.data;
 };
 
-export const getCart = async () => {
-  const token = getToken();
-  if (!token) throw new Error('Token não encontrado');
-
-  const res = await fetch(API_URL, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) throw new Error('Erro ao buscar carrinho');
-  return res.json();
+export const addItemToCart = async (productId: number, quantity: number): Promise<CartItemResponse> => {
+  const response = await api.post<CartItemResponse>('/cart', { productId, quantity });
+  return response.data;
 };
 
-export const addItemToCart = async (productId: number, quantity: number) => {
-  const token = getToken();
-  if (!token) throw new Error('Token não encontrado');
-
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({ productId, quantity })
-  });
-
-  if (!res.ok) throw new Error('Erro ao adicionar item ao carrinho');
-  return res.json();
-};
-
-export const removeItemFromCart = async (productId: number) => {
-  const token = getToken();
-  if (!token) throw new Error('Token não encontrado');
-
-  const res = await fetch(`${API_URL}/${productId}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) throw new Error('Erro ao remover item');
-  return res.json();
+export const removeItemFromCart = async (productId: number): Promise<{ message: string }> => {
+  const response = await api.delete<{ message:string }>(`/cart/${productId}`);
+  return response.data;
 };
