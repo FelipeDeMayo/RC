@@ -22,14 +22,11 @@ const CartPage = () => {
       ) : (
         <>
           <ul>
-            {/* Mapeamento com o tipo do item e o key. Perfeito. */}
             {cartItems.map((item: ProductWithQuantity) => (
               <li key={item.id} style={{ marginBottom: '1rem' }}>
                 <strong>{item.name}</strong> <br />
                 Preço: R$ {item.price !== undefined ? item.price.toFixed(2) : '0.00'} <br />
                 Quantidade: {item.quantity ?? 1} <br />
-                
-                {/* Botão de remover chamando a função correta com o ID correto. Perfeito. */}
                 <button onClick={() => removeFromCart(item.id)}>Remover</button>
               </li>
             ))}

@@ -3,7 +3,6 @@ const prisma = new PrismaClient();
 const multer = require('multer');
 const path = require('path');
 
-// --- Configuração do Multer para Upload de Imagens ---
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => {
@@ -48,7 +47,7 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   const { name, description, price } = req.body;
-  const image = req.file ? req.file.path : null; 
+  const image = req.file ? req.file.filename : null
 
   if (!name || !description || !price) {
     return res.status(400).json({ error: 'Campos obrigatórios faltando' });
