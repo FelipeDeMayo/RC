@@ -1,14 +1,14 @@
-// src/App.tsx
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import Navbar from './components/Navbar';
-import { AuthProvider } from './contexts/AuthContext'; 
+import CartModal from './components/CartModal';
+import AdminRoute from './routes/AdminRoute';
+
 import { useAuth } from './contexts/useAuth';
-import { CartProvider } from '../src/contexts/CartProvider';
-import { useCart } from '../src/contexts/useCart';
-import CartModal from '../src/components/CartModal';
+import { useCart } from './contexts/useCart';
 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -16,10 +16,9 @@ import RegisterPage from './pages/RegisterPage';
 import ProductPage from './pages/ProductPage';
 import ProfilePage from './pages/ProfilePage';
 import CartPage from './pages/CartPage';
-import AdminRoute from './routes/AdminRoute';
 import AdminProductsPage from './pages/AdminProductsPage';
 
-function AppContent() {
+function App() {
   const navigate = useNavigate();
   const { user, logoutUser, isAuthenticated } = useAuth();
   const { cartItems } = useCart();
@@ -28,20 +27,10 @@ function AppContent() {
   const toggleCart = () => {
     setIsCartOpen(prev => !prev);
   };
-  
-  const handleLoginNavigation = () => {
-    console.log("Navegando para a página de login...");
-    navigate('/login');
-  };
-
-  const handleRegisterNavigation = () => {
-    console.log("Navegando para a página de registro...");
-    navigate('/register'); 
-  };
 
   const handleLogoutAction = () => {
-    logoutUser(); 
-    navigate('/login'); 
+    logoutUser();
+    navigate('/login');
     toast.info('Você foi desconectado.');
   };
 
@@ -52,11 +41,10 @@ function AppContent() {
         isCartOpen={isCartOpen}
         userName={user?.name}
         onLogout={isAuthenticated ? handleLogoutAction : undefined}
-        onLogin={!isAuthenticated ? handleLoginNavigation : undefined}
-        onRegister={!isAuthenticated ? handleRegisterNavigation : undefined}
       />
 
       {isCartOpen && <CartModal items={cartItems} onClose={toggleCart} />}
+      
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -73,21 +61,9 @@ function AppContent() {
           }
         />
       </Routes>
-      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      
+      <ToastContainer position="bottom-right" autoClose={3000} />
     </>
-  );
-}
-
-
-function App() {
-  return (
-    <Router> 
-      <AuthProvider>
-        <CartProvider>
-          <AppContent />
-        </CartProvider>
-      </AuthProvider>
-    </Router>
   );
 }
 
