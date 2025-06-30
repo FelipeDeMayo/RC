@@ -31,7 +31,9 @@ const ProductCard = ({ id, name, description, price, image, onAddToCart }: Produ
         {image && <Image src={imageUrl} alt={name} />}
         <Title>{name}</Title>
         <Description>{description}</Description>
-        <Price>R$ {price.toFixed(2)}</Price>
+        <Price>
+          {price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+        </Price>
 
         {onAddToCart && (
           <AddButton
