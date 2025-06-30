@@ -19,17 +19,17 @@ export const getCart = async (): Promise<GetCartFullResponse> => {
   return response.data;
 };
 
-export const addItemToCart = async (productId: number, quantity: number): Promise<CartItemResponse> => {
-  const response = await api.post<CartItemResponse>('/cart', { productId, quantity });
+export const addItemToCart = async (productId: number, quantity: number): Promise<any> => {
+  const response = await api.post('/cart', { productId, quantity });
   return response.data;
 };
 
-export const removeItemFromCart = async (productId: number): Promise<{ message: string }> => {
-  const response = await api.delete<{ message:string }>(`/cart/${productId}`);
+export const removeItemFromCart = async (productId: number): Promise<any> => {
+  const response = await api.delete(`/cart/${productId}`);
   return response.data;
 };
 
 export const clearCartFromApi = async (): Promise<{ message: string }> => {
-  const response = await api.delete('/cart');
+  const response = await api.delete('/cart/clear');
   return response.data;
 };

@@ -1,25 +1,20 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { CartContext, type CartContextType, type ProductWithQuantity } from './CartContextType';
-import { getCart, addItemToCart, removeItemFromCart, type CartItemResponse, clearCartFromApi  } from '../services/cartService';
+import { getCart, addItemToCart, removeItemFromCart, clearCartFromApi, type CartItemResponse } from '../services/cartService';
 import type { Product } from '../types/Product';
+import { useAuth } from './useAuth';
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const { token } = useAuth();
   const [cartItems, setCartItems] = useState<ProductWithQuantity[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const handleUnauthorized = useCallback(() => {
-    localStorage.clear();
-    window.location.href = '/login';
-  }, []);
-
   const loadCart = useCallback(async () => {
-    const token = localStorage.getItem('token');
     if (!token) {
-      setLoading(false);
       setCartItems([]);
+      setLoading(false);
       return;
     }
-    
     try {
       setLoading(true);
       const cartResponse = await getCart();
@@ -30,22 +25,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           price: apiItem.price,
           quantity: apiItem.quantity,
           image: apiItem.image,
-          description: '',
+          description: '', 
         }));
         setCartItems(formattedItems);
       } else {
         setCartItems([]);
       }
     } catch (error) {
-      if (error instanceof Error && String(error).includes('401')) {
-        handleUnauthorized();
-      } else {
         setCartItems([]);
-      }
     } finally {
       setLoading(false);
     }
-  }, [handleUnauthorized]);
+  }, [token]);
 
   useEffect(() => {
     loadCart();
@@ -56,9 +47,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       await addItemToCart(product.id, 1);
       await loadCart();
     } catch (error) {
-      if (error instanceof Error && String(error).includes('401')) {
-        handleUnauthorized();
-      }
+      console.error('Erro ao adicionar item:', error);
     }
   };
 
@@ -67,21 +56,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       await removeItemFromCart(id);
       await loadCart();
     } catch (error) {
-      if (error instanceof Error && String(error).includes('401')) {
-        handleUnauthorized();
-      }
+      console.error('Erro ao remover item:', error);
     }
   };
 
   const clearCart = async () => {
-  try {
-    await clearCartFromApi();
-    setCartItems([]); // Limpa o estado local após o sucesso
-  } catch (error) {
-    console.error('Erro ao limpar o carrinho no backend:', error);
-  }
-};
-    
+    try {
+      await clearCartFromApi();
+      await loadCart();
+    } catch(error) {
+      console.error('Erro ao limpar carrinho:', error);
+    }
+  };
+  
   const contextValue: CartContextType = {
     cartItems,
     loading,

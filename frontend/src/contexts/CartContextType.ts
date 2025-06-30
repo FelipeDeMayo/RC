@@ -8,7 +8,7 @@ export type CartContextType = {
   loading: boolean;
   addToCart: (product: Product) => Promise<void>;
   removeFromCart: (id: number) => Promise<void>;
-  clearCart: () => void;
+  clearCart: () => Promise<void>;
 };
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
