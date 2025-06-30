@@ -1,16 +1,14 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 export const Card = styled.div`
-  border: 1px solid #eee;
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 1rem;
   width: 100%;
-  max-width: 260px;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surface};
   text-align: center;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -19,7 +17,7 @@ export const Card = styled.div`
     transform: translateY(-6px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
-`
+`;
 
 export const Image = styled.img`
   width: 100%;
@@ -27,38 +25,39 @@ export const Image = styled.img`
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 1rem;
-`
+`;
 
 export const Title = styled.h3`
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
-  color: #222;
+  color: ${({ theme }) => theme.colors.primary};
   font-weight: 600;
-`
+`;
 
 export const Description = styled.p`
   font-size: 0.95rem;
-  color: #555;
+  color: ${({ theme }) => theme.colors.textSecondary};
   margin-bottom: 0.75rem;
-`
+`;
 
 export const Price = styled.strong`
   font-size: 1.1rem;
-  color: #28a745;
+  color: ${({ theme }) => theme.colors.success};
   margin-bottom: 1rem;
-`
+`;
+
 export const AddButton = styled.button`
   margin-top: 1rem;
   padding: 0.6rem 1.2rem;
-  background-color: #007bff;
+  background-color: ${({ theme }) => theme.colors.secondary};
   border: none;
   border-radius: 8px;
-  color: white;
+  color: ${({ theme }) => theme.colors.white};
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: ${({ theme }) => theme.colors.secondaryHover};
   }
-`
+`;

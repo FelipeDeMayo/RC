@@ -1,9 +1,13 @@
 export const theme = {
   colors: {
-    primary: '#1A1A1A',
-    background: '#f4f4f4',
-    text: '#333333',
-    white: '#FFFFFF'
+    primary: '#1A1A1A',        // Preto principal
+    primaryHover: '#404040', // Um tom mais claro para o hover
+    background: '#f4f4f4',     // Cinza de fundo
+    text: '#333333',           // Cor de texto padrão
+    white: '#FFFFFF',
+    danger: '#ef4444',         // Vermelho para ações de perigo/cancelar
+    dangerHover: '#dc2626',
+    success: '#10b981',        // Verde para preços ou sucesso
   },
   fonts: {
     navigation: "'Montserrat', sans-serif",

@@ -1,10 +1,8 @@
-// src/styles/HeaderStyles.ts
-
 import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 interface NavButtonProps {
-  $variant?: 'primary' | 'secondary' | 'ghost'; 
+  $variant?: 'primary' | 'secondary' | 'ghost';
 }
 
 export const NavButton = styled.button<NavButtonProps>`
@@ -28,15 +26,14 @@ export const NavButton = styled.button<NavButtonProps>`
     box-shadow: none;
   }
 
-  ${({ $variant, theme }) => { 
+  ${({ $variant, theme }) => {
     switch ($variant) {
       case 'primary':
         return css`
           background-color: ${theme.colors.primary};
-          color: ${theme.colors.white};
+          color: ${theme.colors.surface};
           &:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
+            background-color: ${theme.colors.primaryHover};
           }
         `;
       case 'secondary':
@@ -46,8 +43,7 @@ export const NavButton = styled.button<NavButtonProps>`
           border-color: ${theme.colors.primary};
           &:hover {
             background-color: ${theme.colors.primary};
-            color: ${theme.colors.white};
-            transform: scale(1.02);
+            color: ${theme.colors.surface};
           }
         `;
       case 'ghost':
@@ -57,21 +53,18 @@ export const NavButton = styled.button<NavButtonProps>`
           color: ${theme.colors.primary};
           &:hover {
             background-color: ${theme.colors.background};
-            transform: scale(1.02);
           }
         `;
     }
   }}
 `;
 
-// ...resto do seu arquivo...
-
 export const TopBar = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.surface};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -79,16 +72,15 @@ export const TopBar = styled.header`
 `;
 
 export const LogoLink = styled(Link)`
-  color: #C2185B;
+  color: ${({ theme }) => theme.colors.primary};
   font-weight: bold;
   font-size: 1.5rem;
   text-decoration: none;
-  user-select: none;
   cursor: pointer;
   transition: color 0.3s ease;
 
   &:hover {
-    color: #FF69B4;
+    color: ${({ theme }) => theme.colors.primaryHover};
   }
 `;
 
@@ -97,21 +89,20 @@ export const NavLinks = styled.nav`
   align-items: center;
   gap: 1rem;
   .user-greeting {
-    color: #555;
+    color: ${({ theme }) => theme.colors.textSecondary};
     font-weight: 500;
   }
 
   @media (max-width: 768px) {
     display: none;
-    
     &.active {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 1.5rem;
-      background: white;
+      background: ${({ theme }) => theme.colors.surface};
       position: absolute;
-      top: 70px; 
+      top: 70px;
       right: 0;
       width: 100%;
       padding: 2rem;
@@ -121,34 +112,30 @@ export const NavLinks = styled.nav`
 `;
 
 export const HamburgerButton = styled.button`
-  display: none; 
+  display: none;
   background: transparent;
-  border: none;
-  color: #C2185B;
-  cursor: pointer;
-  z-index: 1001; 
+  color: ${({ theme }) => theme.colors.primary};
+  z-index: 1001;
 
   @media (max-width: 768px) {
     display: block;
   }
 `;
 
-// ADICIONADO: Estilo para o contêiner do botão do carrinho
 export const CartButtonWrapper = styled.div`
   position: relative;
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: #c2185b;
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
-// ADICIONADO: Estilo para o número de itens no carrinho
 export const CartBadge = styled.span`
   position: absolute;
   top: -8px;
   right: -8px;
-  background-color: #c2185b;
-  color: white;
+  background-color: ${({ theme }) => theme.colors.danger};
+  color: ${({ theme }) => theme.colors.white};
   border-radius: 50%;
   padding: 2px 6px;
   font-size: 0.75rem;
@@ -158,5 +145,5 @@ export const CartBadge = styled.span`
   justify-content: center;
   min-width: 20px;
   height: 20px;
-  border: 2px solid white;
+  border: 2px solid ${({ theme }) => theme.colors.surface};
 `;
