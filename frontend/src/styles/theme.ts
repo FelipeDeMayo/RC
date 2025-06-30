@@ -1,7 +1,7 @@
 export const theme = {
   colors: {
     primary: '#1A1A1A',        // Preto principal
-    primaryHover: '#404040', // Um tom mais claro para o hover
+    primaryHover: '#D81B60', // Um tom mais claro para o hover
     background: '#f4f4f4',     // Cinza de fundo
     text: '#333333',           // Cor de texto padrão
     white: '#FFFFFF',

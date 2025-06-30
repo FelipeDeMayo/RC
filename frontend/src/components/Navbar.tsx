@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ onCartToggle }) => {
             <NavButton $variant="secondary" onClick={() => navigate('/login')}>
               Entrar
             </NavButton>
-            <NavButton $variant="primary" onClick={() => navigate('/register')}>
+            <NavButton $variant="secondary" onClick={() => navigate('/register')}>
               Cadastrar
             </NavButton>
           </>

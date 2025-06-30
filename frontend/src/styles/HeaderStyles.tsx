@@ -30,10 +30,10 @@ export const NavButton = styled.button<NavButtonProps>`
     switch ($variant) {
       case 'primary':
         return css`
-          background-color: ${theme.colors.primary};
+          background-color: ${theme.primaryHover};
           color: ${theme.colors.surface};
           &:hover {
-            background-color: ${theme.colors.primaryHover};
+            background-color: ${theme.primaryHover};
           }
         `;
       case 'secondary':
@@ -42,7 +42,7 @@ export const NavButton = styled.button<NavButtonProps>`
           color: ${theme.colors.primary};
           border-color: ${theme.colors.primary};
           &:hover {
-            background-color: ${theme.colors.primary};
+            background-color: ${theme.colors.primaryHover};
             color: ${theme.colors.surface};
           }
         `;
