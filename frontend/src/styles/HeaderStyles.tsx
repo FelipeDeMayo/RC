@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 interface NavButtonProps {
-  variant?: 'primary' | 'secondary' | 'ghost';
+  $variant?: 'primary' | 'secondary' | 'ghost'; 
 }
 
 export const NavButton = styled.button<NavButtonProps>`
@@ -27,23 +27,26 @@ export const NavButton = styled.button<NavButtonProps>`
     outline: none;
     box-shadow: none;
   }
-  ${({ variant }) => {
-    switch (variant) {
+
+  ${({ $variant, theme }) => { 
+    switch ($variant) {
       case 'primary':
         return css`
-          background-color: #C2185B;
-          color: white;
+          background-color: ${theme.colors.primary};
+          color: ${theme.colors.white};
           &:hover {
-            background-color: #A11045;
+            opacity: 0.9;
             transform: scale(1.02);
           }
         `;
       case 'secondary':
         return css`
-          background-color: #FFD6E8;
-          color: #C2185B;
+          background-color: transparent;
+          color: ${theme.colors.primary};
+          border-color: ${theme.colors.primary};
           &:hover {
-            background-color: #FFB6D0;
+            background-color: ${theme.colors.primary};
+            color: ${theme.colors.white};
             transform: scale(1.02);
           }
         `;
@@ -51,15 +54,17 @@ export const NavButton = styled.button<NavButtonProps>`
       default:
         return css`
           background-color: transparent;
-          color: #C2185B;
+          color: ${theme.colors.primary};
           &:hover {
-            background-color: rgba(194, 24, 91, 0.05);
+            background-color: ${theme.colors.background};
             transform: scale(1.02);
           }
         `;
     }
   }}
 `;
+
+// ...resto do seu arquivo...
 
 export const TopBar = styled.header`
   display: flex;
