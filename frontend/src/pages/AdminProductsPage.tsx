@@ -69,11 +69,12 @@ const AdminProductsPage = () => {
       alert('Preencha todos os campos obrigatórios');
       return;
     }
+    const priceForApi = form.price.replace(',', '.');
 
     const formData = new FormData();
     formData.append('name', form.name);
     formData.append('description', form.description);
-    formData.append('price', form.price);
+    formData.append('price', priceForApi);
     if (imageFile) {
       formData.append('image', imageFile);
     }
@@ -116,7 +117,6 @@ const AdminProductsPage = () => {
     setImageFile(null);
   };
 
-  // O CÓDIGO JSX QUE ESTAVA FALTANDO É ESTE:
   return (
     <Container>
       <Title>Painel de Produtos (Admin)</Title>
@@ -138,8 +138,9 @@ const AdminProductsPage = () => {
         />
         <Input
           name="price"
-          type="number"
-          placeholder="Preço"
+          type="text"
+          inputMode="decimal" 
+          placeholder="Preço (ex: 1045,55)"
           value={form.price}
           onChange={handleChange}
           required
@@ -183,7 +184,9 @@ const AdminProductsPage = () => {
             <div>
               <ProductTitle>
                 {product.name}{' '}
-                <ProductPrice>R$ {product.price.toFixed(2)}</ProductPrice>
+              <ProductPrice>
+                {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </ProductPrice>
               </ProductTitle>
               <ProductDescription>{product.description}</ProductDescription>
             </div>

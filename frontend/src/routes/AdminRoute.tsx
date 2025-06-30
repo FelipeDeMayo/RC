@@ -1,24 +1,20 @@
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '../contexts/useAuth'
+import type { ReactNode } from 'react'; 
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/useAuth';
 
-interface AdminRouteProps {
-  children: React.ReactNode
-}
+const AdminRoute = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated, user, loading } = useAuth();
+  const location = useLocation();
 
-const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user } = useAuth()
-
-  // 🔍 Debug opcional — loga o usuário atual
-  console.log('👤 Verificando acesso admin para:', user)
-
-  // ❌ Se não estiver logado ou não for admin, redireciona
-  if (!user || user.role !== 'ADMIN') {
-    console.warn('🔒 Acesso negado. Redirecionando...')
-    return <Navigate to="/" replace />
+  if (loading) {
+    return <div>Verificando permissões...</div>;
   }
 
-  // ✅ Acesso permitido
-  return <>{children}</>
-}
+  if (isAuthenticated && user?.role === 'ADMIN') {
+    return children;
+  }
 
-export default AdminRoute
+  return <Navigate to="/" state={{ from: location }} replace />;
+};
+
+export default AdminRoute;

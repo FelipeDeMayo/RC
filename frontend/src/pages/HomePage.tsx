@@ -71,7 +71,7 @@ const HomePage: React.FC = () => {
 
       <Container style={{ paddingTop: '100px' }}>
         <Title>
-          {user ? `🛍️ Bem-vindo, ${user.name}!` : '🛍️ Produtos disponíveis:'}
+          {user ? `Bem-vindo, ${user.name}!` : 'Produtos disponíveis:'}
         </Title>
 
         <ProductsGrid>

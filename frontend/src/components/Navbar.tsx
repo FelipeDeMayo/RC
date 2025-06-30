@@ -18,6 +18,9 @@ import {
 
 interface NavbarProps {
   onCartToggle: () => void;
+  isCartOpen: boolean;
+  userName?: string;
+  onLogout?: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onCartToggle }) => {
