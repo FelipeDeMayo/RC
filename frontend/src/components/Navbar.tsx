@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaShoppingCart, FaBars, FaTimes, FaUserCog } from 'react-icons/fa'; // Importa um novo ícone para o Admin
+import { FaShoppingCart, FaBars, FaTimes, FaUserCog } from 'react-icons/fa';
 
 import { useAuth } from '../contexts/useAuth';
-import { useCart } from '../contexts/useCart';
+import { useCart } from '../hooks/useCart';
 import type { ProductWithQuantity } from '../contexts/CartContextType';
 
 import {
@@ -13,10 +13,11 @@ import {
   LogoLink,
   HamburgerButton,
   CartButtonWrapper, 
-  CartBadge 
+  CartBadge,
+  UserActions,
+  AuthActions
 } from '../styles/HeaderStyles';
 
-// A interface agora fica mais simples, não precisamos mais do onCartToggle
 interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = () => {
@@ -39,39 +40,33 @@ const Navbar: React.FC<NavbarProps> = () => {
       <NavLinks className={isMobileMenuOpen ? 'active' : ''}>
         
         {isAuthenticated ? (
-          <>
+          // AGORA TODOS OS ITENS DO USUÁRIO ESTÃO DENTRO DE UserActions
+          <UserActions>
             <span className="user-greeting">Olá, {user?.name}</span>
-            <NavButton $variant="primary" onClick={() => { logoutUser(); navigate('/login'); }}>
+            <NavButton $variant="secondary" onClick={() => { logoutUser(); navigate('/login'); }}>
               Sair
             </NavButton>
-          </>
+            
+            {user?.role === 'ADMIN' ? (
+              <NavButton as={Link} to="/crud/products" title="Painel do Admin">
+                <FaUserCog size={22} />
+              </NavButton>
+            ) : (
+              <CartButtonWrapper as={Link} to="/cart" title="Ver Carrinho">
+                <FaShoppingCart size={22} />
+                {totalItemsInCart > 0 && <CartBadge>{totalItemsInCart}</CartBadge>}
+              </CartButtonWrapper>
+            )}
+          </UserActions>
         ) : (
-          <>
+          <AuthActions>
             <NavButton $variant="secondary" onClick={() => navigate('/login')}>
               Entrar
             </NavButton>
             <NavButton $variant="primary" onClick={() => navigate('/register')}>
               Cadastrar
             </NavButton>
-          </>
-        )}
-        
-       
-        {isAuthenticated && ( // Só mostra um ícone de ação se o usuário estiver logado
-          <>
-            {user?.role === 'ADMIN' ? (
-              // Se for ADMIN, o link leva para o painel de produtos
-              <NavButton as={Link} to="/crud/products" title="Painel do Admin">
-                <FaUserCog size={22} />
-              </NavButton>
-            ) : (
-              // Se for CLIENT, o link leva para a página do carrinho
-              <CartButtonWrapper as={Link} to="/cart" title="Ver Carrinho">
-                <FaShoppingCart size={22} />
-                {totalItemsInCart > 0 && <CartBadge>{totalItemsInCart}</CartBadge>}
-              </CartButtonWrapper>
-            )}
-          </>
+          </AuthActions>
         )}
 
       </NavLinks>

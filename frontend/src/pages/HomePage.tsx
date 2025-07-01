@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useAuth } from '../contexts/useAuth'
 import ProductCard from '../components/ProductCard'
 import CartModal from '../components/CartModal'
-import { useCart } from '../contexts/useCart'
+import { useCart } from '../hooks/useCart'
 
 interface Product {
   id: number

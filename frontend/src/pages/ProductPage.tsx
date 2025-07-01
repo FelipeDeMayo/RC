@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { getProductById } from '../services/productService'
-import { useCart } from '../contexts/useCart'
+import { useCart } from '../hooks/useCart'
 import {
   ProductContainer,
   ProductImage,

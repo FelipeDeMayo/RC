@@ -1,4 +1,4 @@
-import { useCart } from '../contexts/useCart';
+import { useCart } from '../hooks/useCart';
 import { Link } from 'react-router-dom';
 import type { ProductWithQuantity } from '../contexts/CartContextType';
 
