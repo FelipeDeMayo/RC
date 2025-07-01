@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaShoppingCart, FaBars, FaTimes } from 'react-icons/fa';
+import { useNavigate, Link } from 'react-router-dom';
+import { FaShoppingCart, FaBars, FaTimes, FaUserCog } from 'react-icons/fa'; // Importa um novo ícone para o Admin
 
 import { useAuth } from '../contexts/useAuth';
 import { useCart } from '../contexts/useCart';
@@ -16,14 +16,10 @@ import {
   CartBadge 
 } from '../styles/HeaderStyles';
 
-interface NavbarProps {
-  onCartToggle: () => void;
-  isCartOpen: boolean;
-  userName?: string;
-  onLogout?: () => void;
-}
+// A interface agora fica mais simples, não precisamos mais do onCartToggle
+interface NavbarProps {}
 
-const Navbar: React.FC<NavbarProps> = ({ onCartToggle }) => {
+const Navbar: React.FC<NavbarProps> = () => {
   const { cartItems } = useCart();
   const { user, logoutUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -54,15 +50,29 @@ const Navbar: React.FC<NavbarProps> = ({ onCartToggle }) => {
             <NavButton $variant="secondary" onClick={() => navigate('/login')}>
               Entrar
             </NavButton>
-            <NavButton $variant="secondary" onClick={() => navigate('/register')}>
+            <NavButton $variant="primary" onClick={() => navigate('/register')}>
               Cadastrar
             </NavButton>
           </>
         )}
-        <CartButtonWrapper onClick={onCartToggle}>
-          <FaShoppingCart size={22} />
-          {totalItemsInCart > 0 && <CartBadge>{totalItemsInCart}</CartBadge>}
-        </CartButtonWrapper>
+        
+       
+        {isAuthenticated && ( // Só mostra um ícone de ação se o usuário estiver logado
+          <>
+            {user?.role === 'ADMIN' ? (
+              // Se for ADMIN, o link leva para o painel de produtos
+              <NavButton as={Link} to="/crud/products" title="Painel do Admin">
+                <FaUserCog size={22} />
+              </NavButton>
+            ) : (
+              // Se for CLIENT, o link leva para a página do carrinho
+              <CartButtonWrapper as={Link} to="/cart" title="Ver Carrinho">
+                <FaShoppingCart size={22} />
+                {totalItemsInCart > 0 && <CartBadge>{totalItemsInCart}</CartBadge>}
+              </CartButtonWrapper>
+            )}
+          </>
+        )}
 
       </NavLinks>
 
