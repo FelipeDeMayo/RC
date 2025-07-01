@@ -5,7 +5,8 @@ import {
   Title,
   Description,
   Price,
-  AddButton
+  AddButton,
+  ImageWrapper
 } from '../styles/ProductCardStyles'
 
 interface ProductCardProps {
@@ -28,7 +29,9 @@ const ProductCard = ({ id, name, description, price, image, onAddToCart }: Produ
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
       <Card>
-        {image && <Image src={imageUrl} alt={name} />}
+        <ImageWrapper>
+          {image && <Image src={imageUrl} alt={name} />}
+        </ImageWrapper>
         <Title>{name}</Title>
         <Description>{description}</Description>
         <Price>

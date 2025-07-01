@@ -20,12 +20,24 @@ export const Card = styled.div`
 `;
 
 export const Image = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 1rem;
+  height: 100%;
+  object-fit: cover; 
 `;
+
+
+export const ImageWrapper = styled.div`
+  width: 100%;
+  aspect-ratio: 4 / 3; 
+  position: relative;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border-radius: 10px;
+`;
+
 
 export const Title = styled.h3`
   font-size: 1.25rem;

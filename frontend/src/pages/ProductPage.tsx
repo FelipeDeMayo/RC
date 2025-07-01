@@ -9,7 +9,7 @@ import {
   ProductDescription,
   ProductPrice,
   AddToCartButton
-} from '../components/ProductCardStyles'
+} from '../styles/ProductCardPageStyles'
 
 type Product = {
   id: number
