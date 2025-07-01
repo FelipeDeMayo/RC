@@ -13,22 +13,24 @@ enum Role {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  name          String
-  email         String         @unique
-  password      String
-  role          Role           @default(CLIENT)
-  products      Product[]
-  cart          Cart?
-  createdAt     DateTime       @default(now())
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CLIENT)
+  products  Product[]
+  cart      Cart?
+  createdAt DateTime @default(now())
   refreshTokens RefreshToken[]
+  twoFactorSecret   String?  
+  isTwoFactorEnabled Boolean  @default(false) 
 }
 
 model RefreshToken {
   id        String   @id @default(cuid())
   token     String   @db.Text
   expiresIn DateTime
-  userId    Int
+  userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
