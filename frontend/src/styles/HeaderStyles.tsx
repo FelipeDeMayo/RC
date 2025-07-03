@@ -6,6 +6,11 @@ interface NavButtonProps {
 }
 
 
+export const LogoImage = styled.img`
+  height: 40px; 
+  width: auto; 
+`;
+
 export const UserActions = styled.div`
   display: flex;
   align-items: center;

@@ -124,3 +124,23 @@ export const EmptyCartMessage = styled.div`
   padding: 3rem;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
+
+export const ActionsContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem; 
+  margin-top: 1rem;
+`;
+
+export const ClearCartButton = styled.button`
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 0.75rem;
+  
+  &:hover {
+    color: ${({ theme }) => theme.colors.danger};
+  }
+`;

@@ -15,7 +15,8 @@ import {
   CartButtonWrapper, 
   CartBadge,
   UserActions,
-  AuthActions
+  AuthActions,
+  LogoImage
 } from '../styles/HeaderStyles';
 
 interface NavbarProps {}
@@ -35,12 +36,14 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   return (
     <TopBar>
-      <LogoLink to="/">RC Fitness</LogoLink>
+      <LogoLink to="/">
+  <LogoImage src="/logo.png" alt="RC Fitness Logo" />
+      </LogoLink>
 
       <NavLinks className={isMobileMenuOpen ? 'active' : ''}>
         
         {isAuthenticated ? (
-          // AGORA TODOS OS ITENS DO USUÁRIO ESTÃO DENTRO DE UserActions
+      
           <UserActions>
             <span className="user-greeting">Olá, {user?.name}</span>
             <NavButton $variant="secondary" onClick={() => { logoutUser(); navigate('/login'); }}>

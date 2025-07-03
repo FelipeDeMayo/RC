@@ -17,7 +17,9 @@ import {
   CartSummary,
   TotalPrice,
   CheckoutButton,
-  EmptyCartMessage
+  EmptyCartMessage,
+  ActionsContainer, 
+  ClearCartButton
 } from '../styles/CartStyles';
 
 const CartPage = () => {
@@ -76,10 +78,14 @@ const CartPage = () => {
             <TotalPrice>
               Total: {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </TotalPrice>
-            <CheckoutButton onClick={handleCheckout}>
-              Finalizar Compra
-            </CheckoutButton>
-            <button onClick={clearCart} style={{marginTop: '1rem', color: 'grey'}}>Limpar Carrinho</button>
+            
+            {/* Usamos o contêiner para alinhar e espaçar os botões */}
+            <ActionsContainer>
+              <ClearCartButton onClick={clearCart}>Limpar Carrinho</ClearCartButton>
+              <CheckoutButton onClick={handleCheckout}>
+                Finalizar Compra
+              </CheckoutButton>
+            </ActionsContainer>
           </CartSummary>
         </>
       )}
