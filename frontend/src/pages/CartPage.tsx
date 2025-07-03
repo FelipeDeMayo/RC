@@ -2,42 +2,88 @@ import { useCart } from '../hooks/useCart';
 import { Link } from 'react-router-dom';
 import type { ProductWithQuantity } from '../contexts/CartContextType';
 
+import {
+  CartContainer,
+  Title,
+  CartItemsList,
+  CartItem,
+  ItemImage,
+  ItemDetails,
+  ItemName,
+  ItemPrice,
+  QuantityControl,
+  QuantityButton,
+  QuantityDisplay,
+  CartSummary,
+  TotalPrice,
+  CheckoutButton,
+  EmptyCartMessage
+} from '../styles/CartStyles';
+
 const CartPage = () => {
-  const { cartItems, removeFromCart, clearCart, loading } = useCart();
+  const { cartItems, addToCart, removeFromCart, clearCart, loading } = useCart();
 
   const total = cartItems.reduce(
     (acc: number, item: ProductWithQuantity) => acc + (item.price ?? 0) * (item.quantity ?? 1),
     0
   );
 
+  const handleCheckout = () => {
+    alert('Função "Finalizar Compra" a ser implementada!');
+  };
   if (loading) {
-    return <div style={{ padding: '2rem' }}><h2>Carregando carrinho...</h2></div>;
+    return (
+      <CartContainer>
+        <Title>Carregando carrinho...</Title>
+      </CartContainer>
+    );
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>🛒 Carrinho</h2>
+    <CartContainer>
+      <Title>🛒 Seu Carrinho</Title>
+      
       {cartItems.length === 0 ? (
-        <p>
-          Seu carrinho está vazio. <Link to="/">Voltar às compras</Link>
-        </p>
+        <EmptyCartMessage>
+          <p>Seu carrinho está vazio.</p>
+          <Link to="/">Voltar às compras</Link>
+        </EmptyCartMessage>
       ) : (
         <>
-          <ul>
-            {cartItems.map((item: ProductWithQuantity) => (
-              <li key={`${item.id}-${item.name}`} style={{ marginBottom: '1rem' }}>
-                <strong>{item.name}</strong> <br />
-                Preço: R$ {item.price !== undefined ? item.price.toFixed(2) : '0.00'} <br />
-                Quantidade: {item.quantity ?? 1} <br />
-                <button onClick={() => removeFromCart(item.id)}>Remover</button>
-              </li>
+          <CartItemsList>
+            {cartItems.map((item) => (
+              <CartItem key={item.id}>
+                <ItemImage
+                  src={item.image ? `http://localhost:3000/uploads/${item.image}` : '/placeholder.png'}
+                  alt={item.name}
+                />
+                <ItemDetails>
+                  <ItemName>{item.name}</ItemName>
+                  <ItemPrice>
+                    {item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </ItemPrice>
+                </ItemDetails>
+                <QuantityControl>
+                  <QuantityButton onClick={() => removeFromCart(item.id)}>-</QuantityButton>
+                  <QuantityDisplay>{item.quantity}</QuantityDisplay>
+                  <QuantityButton onClick={() => addToCart(item)}>+</QuantityButton>
+                </QuantityControl>
+              </CartItem>
             ))}
-          </ul>
-          <h3>Total: R$ {total.toFixed(2)}</h3>
-          <button onClick={clearCart}>🗑️ Limpar Carrinho</button>
+          </CartItemsList>
+          
+          <CartSummary>
+            <TotalPrice>
+              Total: {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            </TotalPrice>
+            <CheckoutButton onClick={handleCheckout}>
+              Finalizar Compra
+            </CheckoutButton>
+            <button onClick={clearCart} style={{marginTop: '1rem', color: 'grey'}}>Limpar Carrinho</button>
+          </CartSummary>
         </>
       )}
-    </div>
+    </CartContainer>
   );
 };
 

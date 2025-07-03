@@ -1,37 +1,126 @@
-// Arquivo: src/styles/CartStyles.ts
-
 import styled from 'styled-components';
 
 export const CartContainer = styled.div`
-  position: fixed;
-  top: 80px;
-  right: 0;
-  width: 320px;
-  height: calc(100vh - 80px);
-  background-color: ${({ theme }) => theme.colors.surface};
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.15);
-  z-index: 1100;
-  padding: 1rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
-export const CartHeader = styled.div`
-  font-family: ${({ theme }) => theme.fonts.title};
-  font-weight: 700;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-`;
-
-export const CartItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-`;
-
-export const EmptyCartMessage = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
+export const Title = styled.h2`
   text-align: center;
+  margin-bottom: 2rem;
+  font-family: ${({ theme }) => theme.fonts.title};
+`;
+
+export const CartItemsList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+export const CartItem = styled.li`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+`;
+
+export const ItemImage = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 1.5rem;
+`;
+
+export const ItemDetails = styled.div`
+  flex-grow: 1;
+`;
+
+export const ItemName = styled.h4`
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+`;
+
+export const ItemPrice = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+export const QuantityControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+export const QuantityButton = styled.button`
+  width: 30px;
+  height: 30px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.background};
+  }
+`;
+
+export const QuantityDisplay = styled.span`
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+`;
+
+export const RemoveButton = styled.button`
+  background: transparent;
+  color: ${({ theme }) => theme.colors.danger};
+  font-size: 1.2rem;
+  margin-left: 1.5rem;
+`;
+
+export const CartSummary = styled.div`
   margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid ${({ theme }) => theme.colors.primary};
+  text-align: right;
+`;
+
+export const TotalPrice = styled.h3`
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+`;
+
+export const CheckoutButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.white};
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primaryHover};
+  }
+`;
+
+export const EmptyCartMessage = styled.div`
+  text-align: center;
+  padding: 3rem;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;

@@ -1,67 +1,111 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { register } from '../services/authService'
+// Arquivo: src/pages/RegisterPage.tsx
+
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { register } from '../services/authService';
+import { 
+  RegisterContainer, 
+  FormWrapper, 
+  Title, 
+  Form, 
+  FormGroup, 
+  Label, 
+  Input, 
+  Button,
+  ErrorMessage
+} from '../styles/RegisterPageStyles';
 
 const RegisterPage = () => {
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  })
-  const [error, setError] = useState('')
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // Estado para confirmação de senha
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault() 
-    try {
-      await register(formData)
-      navigate('/login')
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('Erro desconhecido')
-      }
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
     }
-  }
+
+    setLoading(true);
+    try {
+      await register({ name, email, password });
+      toast.success('Conta criada com sucesso! Agora você pode fazer o login.');
+      navigate('/login');
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.error || 'Não foi possível criar a conta.';
+      setError(errorMessage);
+      console.error('Erro no registro:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div>
-      <h2>Cadastro</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Nome"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="E-mail"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Senha"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Cadastrar</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </form>
-    </div>
-  )
-}
+    <RegisterContainer>
+      <FormWrapper>
+        <Title>Criar Conta</Title>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label htmlFor="name">Nome</Label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={loading}
+              required
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="email">E-mail</Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              required
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="password">Senha</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              required
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading}
+              required
+            />
+          </FormGroup>
+          
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Criando...' : 'Cadastrar'}
+          </Button>
+          
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </Form>
+      </FormWrapper>
+    </RegisterContainer>
+  );
+};
 
-export default RegisterPage
+export default RegisterPage;
