@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useAuth } from '../contexts/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import styled from 'styled-components'; 
+import styled from 'styled-components';
 
 const LoginPageContainer = styled.div`
   max-width: 400px;
@@ -11,10 +11,12 @@ const LoginPageContainer = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
 `;
 
 const FormGroup = styled.div`
   margin-bottom: 1rem;
+  text-align: left;
   label {
     display: block;
     margin-bottom: 0.5rem;
@@ -24,6 +26,7 @@ const FormGroup = styled.div`
     padding: 0.5rem;
     border: 1px solid ${({ theme }) => theme.colors.border};
     border-radius: 4px;
+    box-sizing: border-box;
   }
 `;
 
@@ -41,36 +44,35 @@ const StyledButton = styled.button`
   }
 `;
 
+const LogoImage = styled.img`
+  width: 150px;
+  height: auto;
+  margin-bottom: 2rem;
+`;
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [twoFactorCode, setTwoFactorCode] = useState('');
-  
-  // Novo estado para controlar qual formulário mostrar
   const [isAwaiting2FA, setIsAwaiting2FA] = useState(false);
-
   const [loading, setLoading] = useState(false);
+
   const { login, loginWith2FA } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state?.from?.pathname || "/";
 
-  // Função para lidar com o envio de email e senha
   const handlePasswordSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Agora chamamos a função 'login' do nosso contexto
+
     const result = await login({ email, password });
 
     setLoading(false);
     if (result.success) {
       if (result.twoFactorRequired) {
-        // Se o backend pedir o 2FA, mudamos o estado para mostrar o outro form
         setIsAwaiting2FA(true);
       } else {
-        // Se não, é um login normal e bem-sucedido
         navigate(from, { replace: true });
         toast.success('Login realizado com sucesso!');
       }
@@ -79,13 +81,12 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Nova função para lidar com o envio do código de 6 dígitos
   const handle2FASubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const result = await loginWith2FA(twoFactorCode);
-    
+
     setLoading(false);
     if (result.success) {
       navigate(from, { replace: true });
@@ -97,11 +98,10 @@ const LoginPage: React.FC = () => {
 
   return (
     <LoginPageContainer>
+      <LogoImage src="/logo.png" alt="RC Fitness Logo" />
       <h2>Login</h2>
-      
-      {/* Aqui está a renderização condicional */}
+
       {!isAwaiting2FA ? (
-        // FORMULÁRIO 1: Email e Senha
         <form onSubmit={handlePasswordSubmit}>
           <FormGroup>
             <label htmlFor="email">Email:</label>
@@ -130,7 +130,6 @@ const LoginPage: React.FC = () => {
           </StyledButton>
         </form>
       ) : (
-        // FORMULÁRIO 2: Código 2FA
         <form onSubmit={handle2FASubmit}>
           <p>Abra seu app autenticador e insira o código de 6 dígitos.</p>
           <FormGroup>
