@@ -1,4 +1,3 @@
-// Arquivo: src/pages/SecurityPage.tsx
 
 import { useState, type FormEvent } from 'react';
 import QRCode from 'qrcode';
@@ -15,6 +14,12 @@ const SecurityContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   color: ${({ theme }) => theme.colors.text};
+`;
+
+const QRCodeWrapper = styled.div`
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  padding: 1.5rem 0;      /* Adiciona um espaçamento vertical bonito */
 `;
 
 const StyledButton = styled.button`
@@ -100,7 +105,9 @@ const SecurityPage = () => {
         <div>
           <h3>Configure seu App Autenticador</h3>
           <p>1. Escaneie o QR Code abaixo com seu app (Google Authenticator, Authy, etc.).</p>
-          {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code para 2FA" style={{ margin: '1rem 0', border: '5px solid white' }} />}
+          <QRCodeWrapper>
+          {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code para 2FA" style={{ border: '5px solid white', borderRadius: '8px' }} />}
+          </QRCodeWrapper>
 
           <p>Se não puder escanear, insira este código manualmente:</p>
           <SecretCode>{setupSecret}</SecretCode>

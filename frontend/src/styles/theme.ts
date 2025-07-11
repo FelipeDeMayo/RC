@@ -1,14 +1,17 @@
 export const theme = {
   colors: {
-    primary: '#C2185B',        // Preto principal
+    primary: '#C2185B',
     primaryHover: '#AD1457',
     secondary: '#f06292',  // Um tom mais claro para o hover
-    background: '#f4f4f4',     // Cinza de fundo
-    text: '#333333',           // Cor de texto padrão
-    white: '#FFFFFF',
-    danger: '#ef4444',         // Vermelho para ações de perigo/cancelar
+    background: '#f8f9fa',     // Um cinza de fundo quase branco
+    surface: '#FFFFFF',        // Cor de superfície para cards, modais
+    text: '#212529',           // Cor de texto principal (preto suave)
+    textSecondary: '#6c757d',  // Cor de texto secundária (cinza)
+    border: '#dee2e6',         // Cor para bordas
+    danger: '#ef4444',
     dangerHover: '#dc2626',
-    success: '#10b981',        // Verde para preços ou sucesso
+    success: '#10b981',
+    white: '#FFFFFF',
   },
   fonts: {
     navigation: "'Montserrat', sans-serif",
