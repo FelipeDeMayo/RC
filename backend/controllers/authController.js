@@ -9,11 +9,22 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refreshsuperse
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
+
   try {
+    // --- INÍCIO DA VALIDAÇÃO DE SENHA FORTE ---
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ 
+        error: 'A senha não atende aos requisitos: mínimo 8 caracteres, uma letra maiúscula, uma minúscula, um número e um caractere especial.' 
+      });
+    }
+    // --- FIM DA VALIDAÇÃO ---
+
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'Email já está em uso.' });
     }
+
     const adminExists = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
     const userRole = adminExists ? 'CLIENT' : 'ADMIN';
 
@@ -21,8 +32,10 @@ const register = async (req, res) => {
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword, role: userRole },
     });
+    
     console.log(`Usuário ${user.email} criado com a permissão: ${user.role}`);
     res.status(201).json({ message: 'Usuário criado com sucesso.' });
+
   } catch (error) {
     console.error('Erro ao registrar usuário:', error);
     res.status(500).json({ error: 'Erro ao registrar usuário.' });
@@ -50,18 +63,20 @@ const login = async (req, res) => {
       });
     }
 
-    const accessToken = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ userId: user.id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    const accessToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ userId: user.id }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
     const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
     await prisma.refreshToken.upsert({
       where: { userId: user.id },
       update: { token: refreshToken, expiresIn: expiryDate },
       create: { token: refreshToken, userId: user.id, expiresIn: expiryDate },
     });
+
     res.json({
       accessToken,
       refreshToken,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, isTwoFactorEnabled: user.isTwoFactorEnabled },
     });
 
   } catch (error) {
@@ -92,7 +107,7 @@ const loginWithTwoFactor = async (req, res) => {
     res.json({
       accessToken,
       refreshToken,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, isTwoFactorEnabled: user.isTwoFactorEnabled },
     });
   } catch (error) {
     console.error("Erro no login com 2FA:", error);
@@ -130,7 +145,7 @@ const verifyTwoFactor = async (req, res) => {
     }
     const isValid = authenticator.verify({ token, secret: user.twoFactorSecret });
     if (!isValid) {
-      return res.status(400).json({ error: 'Código de verificação inválido.' });
+      return res.status(400).json({ error: 'Código de verificação inválido. Tente novamente.' });
     }
     await prisma.user.update({
       where: { id: userId },
@@ -149,9 +164,14 @@ const refreshTokenHandler = async (req, res) => {
         return res.status(401).json({ error: "Refresh token ausente" });
     }
     try {
+        const dbRefreshToken = await prisma.refreshToken.findFirst({
+            where: { token: token }
+        });
+        if (!dbRefreshToken || new Date() > dbRefreshToken.expiresIn) {
+            return res.status(403).json({ error: "Refresh token inválido ou expirado" });
+        }
         jwt.verify(token, REFRESH_TOKEN_SECRET, (err, user) => {
-            if (err) return res.status(403).json({ error: "Refresh token inválido" });
-
+            if (err) return res.status(403).json({ error: "Falha na verificação do refresh token" });
             const newAccessToken = jwt.sign({ userId: user.userId, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
             res.json({ accessToken: newAccessToken });
         });
@@ -163,9 +183,11 @@ const refreshTokenHandler = async (req, res) => {
 const logout = async (req, res) => {
   const { token } = req.body;
   try {
-    await prisma.refreshToken.deleteMany({
-      where: { token: token },
-    });
+    if (token) {
+        await prisma.refreshToken.deleteMany({
+            where: { token: token },
+        });
+    }
     res.status(204).send('Logout bem-sucedido.');
   } catch (error) {
     console.error('Erro no logout:', error);
