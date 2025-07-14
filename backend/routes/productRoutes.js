@@ -6,16 +6,14 @@ const { verifyToken, isAdmin } = require('../middlewares/authMiddleware');
 
 const upload = multer({ dest: 'tmp/' });
 
-// Rotas públicas
 router.get('/products', productController.listProducts);
 router.get('/products/:id', productController.getProductById);
 
-// Rotas protegidas para Admin
 router.post(
   '/products',
   verifyToken,
   isAdmin,
-  upload.single('image'),
+  upload.single('image'), // Correto
   productController.createProduct
 );
 
@@ -23,7 +21,7 @@ router.put(
   '/products/:id',
   verifyToken,
   isAdmin,
-  upload.single('image'),
+  upload.single('image'), 
   productController.updateProduct
 );
 
@@ -38,7 +36,7 @@ router.post(
   '/products/bulk-import',
   verifyToken,
   isAdmin,
-  productController.upload.single('file'), 
+  upload.single('file'),
   productController.bulkImportProducts
 );
 
