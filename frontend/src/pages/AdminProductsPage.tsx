@@ -1,13 +1,13 @@
-// src/pages/AdminProductsPage.tsx - VERSÃO FINAL
-
 import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
+import { toast } from 'react-toastify';
 
 import {
   getAllProducts,
   deleteProduct,
   updateProduct,
   createProduct,
+  bulkImportProducts,
 } from '../services/productService'; 
 
 import {
@@ -39,6 +39,8 @@ const AdminProductsPage = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [form, setForm] = useState({ name: '', description: '', price: '' });
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -50,6 +52,7 @@ const AdminProductsPage = () => {
       setProducts(data);
     } catch (err) {
       console.error('Erro ao buscar produtos:', err);
+      toast.error('Não foi possível carregar os produtos.');
     }
   };
 
@@ -66,11 +69,10 @@ const AdminProductsPage = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.description || !form.price) {
-      alert('Preencha todos os campos obrigatórios');
+      toast.warn('Preencha todos os campos obrigatórios');
       return;
     }
     const priceForApi = form.price.replace(',', '.');
-
     const formData = new FormData();
     formData.append('name', form.name);
     formData.append('description', form.description);
@@ -82,17 +84,18 @@ const AdminProductsPage = () => {
     try {
       if (editingProduct) {
         await updateProduct(editingProduct.id, formData);
+        toast.success('Produto atualizado com sucesso!');
       } else {
         await createProduct(formData);
+        toast.success('Produto criado com sucesso!');
       }
-      
       setForm({ name: '', description: '', price: '' });
       setImageFile(null);
       setEditingProduct(null);
       fetchProducts();
     } catch (err) {
       console.error('Erro ao salvar produto:', err);
-      alert('Falha ao salvar produto. Verifique o console.');
+      toast.error('Falha ao salvar produto.');
     }
   };
 
@@ -101,9 +104,10 @@ const AdminProductsPage = () => {
     try {
       await deleteProduct(id);
       setProducts(products.filter((p) => p.id !== id));
+      toast.success('Produto deletado com sucesso!');
     } catch (err) {
       console.error('Erro ao deletar produto:', err);
-      alert('Falha ao deletar produto. Verifique o console.');
+      toast.error('Falha ao deletar produto.');
     }
   };
 
@@ -112,81 +116,88 @@ const AdminProductsPage = () => {
     setForm({
       name: product.name,
       description: product.description,
-      price: String(product.price),
+      price: String(product.price).replace('.', ','),
     });
     setImageFile(null);
+    window.scrollTo(0, 0);
   };
+
+  // --- NOVAS FUNÇÕES PARA A IMPORTAÇÃO ---
+  const handleImportFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImportFile(e.target.files[0]);
+    }
+  };
+
+  const handleImportSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!importFile) {
+      return toast.error('Por favor, selecione um arquivo CSV.');
+    }
+    setIsImporting(true);
+    try {
+      const result = await bulkImportProducts(importFile);
+      toast.success(result.message);
+      setImportFile(null);
+      (e.target as HTMLFormElement).reset();
+      fetchProducts();
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Falha na importação.');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
 
   return (
     <Container>
       <Title>Painel de Produtos (Admin)</Title>
-
       <Form onSubmit={handleSubmit}>
-        <Input
-          name="name"
-          placeholder="Nome"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-        <Input
-          name="description"
-          placeholder="Descrição"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
-        <Input
-          name="price"
-          type="text"
-          inputMode="decimal" 
-          placeholder="Preço (ex: 1045,55)"
-          value={form.price}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ marginTop: '1rem' }}
-        />
-
+        <h3>{editingProduct ? 'Editar Produto' : 'Criar Novo Produto'}</h3>
+        <Input name="name" placeholder="Nome" value={form.name} onChange={handleChange} required />
+        <Input name="description" placeholder="Descrição" value={form.description} onChange={handleChange} required />
+        <Input name="price" type="text" inputMode="decimal" placeholder="Preço (ex: 1045,55)" value={form.price} onChange={handleChange} required />
+        <input type="file" accept="image/*" onChange={handleFileChange} style={{ marginTop: '1rem' }} />
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
           <Button type="submit">
             {editingProduct ? 'Atualizar Produto' : 'Criar Produto'}
           </Button>
           {editingProduct && (
-            <Button
-              cancel 
-              type="button"
-              onClick={() => {
-                setEditingProduct(null);
-                setForm({ name: '', description: '', price: '' });
-                setImageFile(null);
-              }}
-            >
+            <Button cancel type="button" onClick={() => { setEditingProduct(null); setForm({ name: '', description: '', price: '' }); setImageFile(null); }}>
               Cancelar Edição
             </Button>
           )}
         </div>
       </Form>
-
+      <Form as="div" style={{ marginTop: '3rem' }}>
+        <h3>Importação em Massa</h3>
+        <p style={{ fontSize: '0.9rem', color: '#666' }}>Envie um arquivo `.csv` com as colunas: <strong>name, description, price</strong> e (opcional) <strong>image</strong> com a URL.</p>
+        <form onSubmit={handleImportSubmit} style={{ marginTop: '1rem' }}>
+          <Input type="file" accept=".csv" onChange={handleImportFileChange} disabled={isImporting} />
+          <Button type="submit" disabled={isImporting || !importFile} style={{ marginTop: '1rem' }}>
+            {isImporting ? 'Importando...' : 'Importar Arquivo'}
+          </Button>
+        </form>
+      </Form>
       <ProductsList>
         {products.map((product) => (
           <ProductCard key={product.id}>
             {product.image && (
-              <ProductImage
-                src={`http://localhost:3000/uploads/${product.image}`}
-                alt={product.name}
-              />
+            <ProductImage
+              src={
+                product.image.startsWith('http')
+                  ? product.image
+                  : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/uploads/${product.image}`
+              }
+              alt={product.name}
+            />
             )}
             <div>
               <ProductTitle>
                 {product.name}{' '}
-              <ProductPrice>
-                {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-              </ProductPrice>
+                <ProductPrice>
+                  {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </ProductPrice>
               </ProductTitle>
               <ProductDescription>{product.description}</ProductDescription>
             </div>

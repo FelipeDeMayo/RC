@@ -1,45 +1,45 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const productController = require('../controllers/productController');
 const { verifyToken, isAdmin } = require('../middlewares/authMiddleware');
 
-const multer = require('multer');
-const path = require('path');
+const upload = multer({ dest: 'tmp/' });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const filename = `${Date.now()}${ext}`;
-    cb(null, filename);
-  }
-});
-const upload = multer({ storage });
-
+// Rotas públicas
 router.get('/products', productController.listProducts);
 router.get('/products/:id', productController.getProductById);
 
+// Rotas protegidas para Admin
 router.post(
   '/products',
-  verifyToken, // Verifica se está logado e cria req.user
-  isAdmin,     // Verifica se req.user.role é 'ADMIN'
+  verifyToken,
+  isAdmin,
   upload.single('image'),
   productController.createProduct
 );
 
 router.put(
   '/products/:id',
-  verifyToken, 
-  isAdmin,     
+  verifyToken,
+  isAdmin,
   upload.single('image'),
   productController.updateProduct
 );
 
 router.delete(
   '/products/:id',
-  verifyToken, 
-  isAdmin,    
+  verifyToken,
+  isAdmin,
   productController.deleteProduct
+);
+
+router.post(
+  '/products/bulk-import',
+  verifyToken,
+  isAdmin,
+  productController.upload.single('file'), 
+  productController.bulkImportProducts
 );
 
 module.exports = router;
