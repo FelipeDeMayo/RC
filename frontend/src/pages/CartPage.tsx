@@ -1,7 +1,6 @@
 import { useCart } from '../hooks/useCart';
 import { Link } from 'react-router-dom';
 import type { ProductWithQuantity } from '../contexts/CartContextType';
-
 import {
   CartContainer,
   Title,
@@ -33,12 +32,9 @@ const CartPage = () => {
   const handleCheckout = () => {
     alert('Função "Finalizar Compra" a ser implementada!');
   };
+
   if (loading) {
-    return (
-      <CartContainer>
-        <Title>Carregando carrinho...</Title>
-      </CartContainer>
-    );
+    return <CartContainer><Title>Carregando carrinho...</Title></CartContainer>;
   }
 
   return (
@@ -56,7 +52,8 @@ const CartPage = () => {
             {cartItems.map((item) => (
               <CartItem key={item.id}>
                 <ItemImage
-                  src={item.image ? `http://localhost:3000/uploads/${item.image}` : '/placeholder.png'}
+                  // A LÓGICA CORRIGIDA ESTÁ AQUI
+                  src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:3000/uploads/${item.image}`}
                   alt={item.name}
                 />
                 <ItemDetails>
@@ -78,8 +75,6 @@ const CartPage = () => {
             <TotalPrice>
               Total: {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </TotalPrice>
-            
-            {/* Usamos o contêiner para alinhar e espaçar os botões */}
             <ActionsContainer>
               <ClearCartButton onClick={clearCart}>Limpar Carrinho</ClearCartButton>
               <CheckoutButton onClick={handleCheckout}>

@@ -2,6 +2,7 @@ export const theme = {
   colors: {
     primary: '#C2185B',
     primaryHover: '#AD1457',
+    secondaryHover: '#5a6268',
     secondary: '#f06292',  // Um tom mais claro para o hover
     background: '#f8f9fa',     // Um cinza de fundo quase branco
     surface: '#FFFFFF',        // Cor de superfície para cards, modais

@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   CartContainer,
-  CartHeader,
+  Title,
   CartItem,
   EmptyCartMessage
 } from '../styles/CartStyles'
@@ -20,7 +20,7 @@ interface CartProps {
 const Cart: React.FC<CartProps> = ({ items }) => {
   return (
     <CartContainer>
-      <CartHeader>Seu Carrinho</CartHeader>
+      <Title>Seu Carrinho</Title>
 
       {items.length === 0 ? (
         <EmptyCartMessage>Seu carrinho está vazio</EmptyCartMessage>

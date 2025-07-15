@@ -11,6 +11,7 @@ export const Card = styled.div`
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  height: 100%;
   justify-content: space-between;
 
   &:hover {

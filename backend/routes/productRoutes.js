@@ -13,7 +13,7 @@ router.post(
   '/products',
   verifyToken,
   isAdmin,
-  upload.single('image'), // Correto
+  upload.single('image'),
   productController.createProduct
 );
 
