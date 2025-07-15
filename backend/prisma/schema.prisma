@@ -24,6 +24,8 @@ model User {
   refreshTokens RefreshToken[]
   twoFactorSecret   String?  
   isTwoFactorEnabled Boolean  @default(false) 
+  passwordResetToken   String?   @unique 
+  passwordResetExpires DateTime?
 }
 
 model RefreshToken {
