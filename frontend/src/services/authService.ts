@@ -21,8 +21,6 @@ export interface LoginSuccessResponse {
 
 export type LoginApiResponse = LoginSuccessResponse | TwoFactorRequiredResponse;
 
-// --- FUNÇÕES DE SERVIÇO ---
-
 export async function login(data: { email: string; password: string }): Promise<LoginApiResponse> {
   const response = await api.post<LoginApiResponse>('/auth/login', data);
   return response.data;
@@ -33,7 +31,6 @@ export async function loginWithTwoFactor(data: { userId: number; token: string }
   return response.data;
 }
 
-// ADICIONE ESTAS DUAS NOVAS FUNÇÕES PARA O SETUP DO 2FA
 export async function generateTwoFactorSecret(): Promise<{ secret: string; otpauth: string; }> {
   const response = await api.post('/auth/2fa/generate');
   return response.data;
@@ -46,5 +43,15 @@ export async function verifyTwoFactor(token: string): Promise<{ message: string;
 
 export async function register(data: any): Promise<any> {
   const response = await api.post('/auth/register', data);
+  return response.data;
+}
+
+export async function forgotPassword(email: string): Promise<{ message: string }> {
+  const response = await api.post('/auth/forgot-password', { email });
+  return response.data;
+}
+
+export async function resetPassword(password: string, token: string): Promise<{ message: string }> {
+  const response = await api.post(`/auth/reset-password/${token}`, { password });
   return response.data;
 }
