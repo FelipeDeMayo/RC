@@ -1,10 +1,6 @@
-// Ficheiro: src/pages/CartPage.tsx
-
 import { useCart } from '../hooks/useCart';
 import { Link, useNavigate } from 'react-router-dom';
 import type { ProductWithQuantity } from '../contexts/CartContextType';
-
-// Importando todos os nossos novos componentes de estilo
 import {
   CartContainer,
   Title,
@@ -27,7 +23,7 @@ import {
 import { FaShoppingCart } from 'react-icons/fa';
 
 const CartPage = () => {
-  // Pegamos as funções 'addToCart' e 'removeFromCart' para os botões de +/-
+
   const { cartItems, addToCart, removeFromCart, clearCart, loading } = useCart();
   const navigate = useNavigate();
 
@@ -37,7 +33,7 @@ const CartPage = () => {
   );
 
   const handleCheckout = () => {
-    // No futuro, aqui vai a lógica para ir para a página de pagamento
+    
     navigate('/checkout');
   };
 
@@ -69,8 +65,6 @@ const CartPage = () => {
                     {item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </ItemPrice>
                 </ItemDetails>
-
-                {/* Controles de Quantidade +/- */}
                 <QuantityControl>
                   <QuantityButton onClick={() => removeFromCart(item.id)}>-</QuantityButton>
                   <QuantityDisplay>{item.quantity}</QuantityDisplay>
