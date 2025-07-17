@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+
 export const CartContainer = styled.div`
   max-width: 800px;
   margin: 2rem auto;
@@ -10,6 +11,10 @@ export const CartContainer = styled.div`
 `;
 
 export const Title = styled.h2`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
   text-align: center;
   margin-bottom: 2rem;
   font-family: ${({ theme }) => theme.fonts.title};
@@ -24,6 +29,7 @@ export const CartItemsList = styled.ul`
 export const CartItem = styled.li`
   display: flex;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
@@ -39,7 +45,7 @@ export const ItemImage = styled.img`
   height: 80px;
   object-fit: cover;
   border-radius: 8px;
-  margin-right: 1.5rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const ItemDetails = styled.div`
@@ -49,6 +55,7 @@ export const ItemDetails = styled.div`
 export const ItemName = styled.h4`
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 export const ItemPrice = styled.p`
@@ -70,11 +77,12 @@ export const QuantityButton = styled.button`
   border-radius: 50%;
   cursor: pointer;
   font-size: 1.2rem;
+  font-weight: 600;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.background};
@@ -83,27 +91,36 @@ export const QuantityButton = styled.button`
 
 export const QuantityDisplay = styled.span`
   font-weight: 600;
-  min-width: 20px;
+  min-width: 25px;
   text-align: center;
-`;
-
-export const RemoveButton = styled.button`
-  background: transparent;
-  color: ${({ theme }) => theme.colors.danger};
-  font-size: 1.2rem;
-  margin-left: 1.5rem;
+  font-size: 1.1rem;
 `;
 
 export const CartSummary = styled.div`
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 2px solid ${({ theme }) => theme.colors.primary};
-  text-align: right;
 `;
 
 export const TotalPrice = styled.h3`
-  margin-bottom: 1rem;
+  text-align: right;
+  margin-bottom: 1.5rem;
   font-size: 1.5rem;
+`;
+
+export const ActionsContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+`;
+
+export const ClearCartButton = styled.button`
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
 `;
 
 export const CheckoutButton = styled.button`
@@ -113,6 +130,7 @@ export const CheckoutButton = styled.button`
   border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
+  transition: background-color 0.2s;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.primaryHover};
@@ -121,26 +139,12 @@ export const CheckoutButton = styled.button`
 
 export const EmptyCartMessage = styled.div`
   text-align: center;
-  padding: 3rem;
+  padding: 3rem 1rem;
   color: ${({ theme }) => theme.colors.textSecondary};
-`;
 
-export const ActionsContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem; 
-  margin-top: 1rem;
-`;
-
-export const ClearCartButton = styled.button`
-  background: transparent;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-weight: 600;
-  text-decoration: underline;
-  padding: 0.75rem;
-  
-  &:hover {
-    color: ${({ theme }) => theme.colors.danger};
+  a {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+    text-decoration: underline;
   }
 `;

@@ -1,6 +1,10 @@
+// Ficheiro: src/pages/CartPage.tsx
+
 import { useCart } from '../hooks/useCart';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { ProductWithQuantity } from '../contexts/CartContextType';
+
+// Importando todos os nossos novos componentes de estilo
 import {
   CartContainer,
   Title,
@@ -17,12 +21,15 @@ import {
   TotalPrice,
   CheckoutButton,
   EmptyCartMessage,
-  ActionsContainer, 
-  ClearCartButton
+  ActionsContainer,
+  ClearCartButton,
 } from '../styles/CartStyles';
+import { FaShoppingCart } from 'react-icons/fa';
 
 const CartPage = () => {
+  // Pegamos as funções 'addToCart' e 'removeFromCart' para os botões de +/-
   const { cartItems, addToCart, removeFromCart, clearCart, loading } = useCart();
+  const navigate = useNavigate();
 
   const total = cartItems.reduce(
     (acc: number, item: ProductWithQuantity) => acc + (item.price ?? 0) * (item.quantity ?? 1),
@@ -30,20 +37,21 @@ const CartPage = () => {
   );
 
   const handleCheckout = () => {
-    alert('Função "Finalizar Compra" a ser implementada!');
+    // No futuro, aqui vai a lógica para ir para a página de pagamento
+    navigate('/checkout');
   };
 
   if (loading) {
-    return <CartContainer><Title>Carregando carrinho...</Title></CartContainer>;
+    return <CartContainer><Title>A carregar carrinho...</Title></CartContainer>;
   }
 
   return (
     <CartContainer>
-      <Title>🛒 Seu Carrinho</Title>
+      <Title><FaShoppingCart /> Seu Carrinho</Title>
       
       {cartItems.length === 0 ? (
         <EmptyCartMessage>
-          <p>Seu carrinho está vazio.</p>
+          <p>O seu carrinho está vazio.</p>
           <Link to="/">Voltar às compras</Link>
         </EmptyCartMessage>
       ) : (
@@ -52,8 +60,7 @@ const CartPage = () => {
             {cartItems.map((item) => (
               <CartItem key={item.id}>
                 <ItemImage
-                  // A LÓGICA CORRIGIDA ESTÁ AQUI
-                  src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:3000/uploads/${item.image}`}
+                  src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:3000/${item.image}`}
                   alt={item.name}
                 />
                 <ItemDetails>
@@ -62,6 +69,8 @@ const CartPage = () => {
                     {item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </ItemPrice>
                 </ItemDetails>
+
+                {/* Controles de Quantidade +/- */}
                 <QuantityControl>
                   <QuantityButton onClick={() => removeFromCart(item.id)}>-</QuantityButton>
                   <QuantityDisplay>{item.quantity}</QuantityDisplay>
@@ -75,6 +84,7 @@ const CartPage = () => {
             <TotalPrice>
               Total: {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </TotalPrice>
+            
             <ActionsContainer>
               <ClearCartButton onClick={clearCart}>Limpar Carrinho</ClearCartButton>
               <CheckoutButton onClick={handleCheckout}>

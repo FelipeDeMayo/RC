@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import { FaArrowRight } from 'react-icons/fa';
+
+// 1. Importe os estilos do ficheiro de estilos
+import {
+  HeroSection,
+  HeroTitle,
+  HeroSubtitle,
+  CTAButton,
+  ProductsSection,
+  SectionTitle,
+  ProductsGrid
+} from '../styles/HomePageStyles';
 
 // Imports dos seus hooks, serviços e tipos
 import { useAuth } from '../contexts/useAuth';
@@ -11,28 +22,6 @@ import type { Product } from '../types/Product';
 import ProductCard from '../components/ProductCard';
 import TwoFactorPrompt from '../components/TwoFactorPrompt';
 
-// --- Estilos Usados na Página ---
-const Container = styled.main`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: ${({ theme }) => theme.colors.primary};
-  text-align: center;
-  margin-bottom: 1rem;
-`;
-
-const ProductsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-`;
-
-// --- Componente da Página ---
 const HomePage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { addToCart } = useCart();
@@ -51,33 +40,44 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <Container style={{ paddingTop: '100px' }}>
-      <Title>
-        {user ? `Bem-vindo, ${user.name}!` : 'Produtos disponíveis:'}
-      </Title>
+    <>
+      <HeroSection>
+        <HeroTitle>Sua Jornada Fitness Começa Aqui</HeroTitle>
+        <HeroSubtitle>
+          Equipamentos de alta qualidade para levar o seu treino para o próximo nível.
+        </HeroSubtitle>
+        <CTAButton href="#products">
+          Ver Produtos
+          <FaArrowRight />
+        </CTAButton>
+      </HeroSection>
 
-      {isAuthenticated && user && !user.isTwoFactorEnabled && (
-        <TwoFactorPrompt />
-      )}
+      <ProductsSection id="products">
+        <SectionTitle>Nossos Destaques</SectionTitle>
 
-      <ProductsGrid>
-        {products.length > 0 ? (
-          products.map(product => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              image={product.image}
-              onAddToCart={() => addToCart(product)}
-            />
-          ))
-        ) : (
-          <p>Nenhum produto encontrado.</p>
+        {isAuthenticated && user && !user.isTwoFactorEnabled && (
+          <TwoFactorPrompt />
         )}
-      </ProductsGrid>
-    </Container>
+
+        <ProductsGrid>
+          {products.length > 0 ? (
+            products.map(product => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                description={product.description}
+                price={product.price}
+                image={product.image}
+                onAddToCart={() => addToCart(product)}
+              />
+            ))
+          ) : (
+            <p>A carregar produtos...</p>
+          )}
+        </ProductsGrid>
+      </ProductsSection>
+    </>
   );
 };
 
