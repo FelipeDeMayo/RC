@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 require('dotenv').config();
 
-const productController = require('./controllers/productController')
+// const productController = require('./controllers/productController') <-- REMOVIDO: Nao eh usado aqui
 const authMiddleware = require('./middlewares/authMiddleware') 
 
 
@@ -13,6 +13,7 @@ const { verifyToken, isAdmin } = require('./middlewares/authMiddleware');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const saleRoutes = require('./routes/saleRoutes'); // NOVO: Importa as rotas de venda
 
 app.use(express.json());
 app.use(cors());
@@ -36,6 +37,8 @@ app.use('/api', productRoutes);
 app.get('/', (req, res) => {
   res.send('API funcionando!');
 });
+
 app.use('/cart', cartRoutes);
+app.use('/api/sales', saleRoutes); // NOVO: Mapeia as rotas de venda
 
 module.exports = app;

@@ -1,13 +1,12 @@
 import styled from 'styled-components';
 
-
 export const CartContainer = styled.div`
   max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
   background: ${({ theme }) => theme.colors.surface};
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px; /* Bordas um pouco mais arredondadas */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Sombra mais pronunciada */
 `;
 
 export const Title = styled.h2`
@@ -18,6 +17,10 @@ export const Title = styled.h2`
   text-align: center;
   margin-bottom: 2rem;
   font-family: ${({ theme }) => theme.fonts.title};
+  font-size: 2.2rem; /* Um pouco maior */
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.05); /* Sombra subtil no título */
 `;
 
 export const CartItemsList = styled.ul`
@@ -46,6 +49,12 @@ export const ItemImage = styled.img`
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.colors.border};
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sombra na imagem ao passar o rato */
+  }
 `;
 
 export const ItemDetails = styled.div`
@@ -55,6 +64,7 @@ export const ItemDetails = styled.div`
 export const ItemName = styled.h4`
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.primary};
 `;
 
@@ -85,7 +95,8 @@ export const QuantityButton = styled.button`
   transition: background-color 0.2s, color 0.2s;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.background};
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.white};
   }
 `;
 
@@ -105,7 +116,9 @@ export const CartSummary = styled.div`
 export const TotalPrice = styled.h3`
   text-align: right;
   margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
 `;
 
 export const ActionsContainer = styled.div`
@@ -121,6 +134,11 @@ export const ClearCartButton = styled.button`
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
+  padding: 0.5rem;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.danger};
+  }
 `;
 
 export const CheckoutButton = styled.button`
@@ -130,10 +148,13 @@ export const CheckoutButton = styled.button`
   border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Sombra subtil no botão principal */
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.primaryHover};
+    transform: translateY(-2px); /* Efeito de "levantar" */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Sombra mais forte no hover */
   }
 `;
 

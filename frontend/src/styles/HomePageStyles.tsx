@@ -63,10 +63,30 @@ export const ProductsSection = styled.section`
   background-color: ${({ theme }) => theme.colors.surface};
 `;
 
+// TÍTULO DA SECÇÃO MELHORADO
 export const SectionTitle = styled.h2`
   text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 2.5rem;
+  font-size: 2.2rem; /* Leve ajuste no tamanho */
+  font-weight: 700;
+  text-transform: uppercase; /* Deixa o texto em maiúsculas para mais impacto */
+  letter-spacing: 1.5px; /* Aumenta o espaçamento entre as letras */
+  margin-bottom: 3rem;
+  color: ${({ theme }) => theme.colors.primary}; /* Usa a cor primária do seu tema */
+  position: relative;
+  padding-bottom: 1rem; /* Cria espaço para a linha abaixo */
+
+  /* Linha decorativa para dar mais destaque */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px; /* Largura da linha */
+    height: 4px; /* Espessura da linha */
+    background-color: ${({ theme }) => theme.colors.primary};
+    border-radius: 2px;
+  }
 `;
 
 export const ProductsGrid = styled.div`

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 
-// 1. Importe os estilos do ficheiro de estilos
 import {
   HeroSection,
   HeroTitle,
@@ -12,13 +11,11 @@ import {
   ProductsGrid
 } from '../styles/HomePageStyles';
 
-// Imports dos seus hooks, serviços e tipos
 import { useAuth } from '../contexts/useAuth';
 import { useCart } from '../hooks/useCart';
 import { getAllProducts } from '../services/productService';
 import type { Product } from '../types/Product';
 
-// Componentes
 import ProductCard from '../components/ProductCard';
 import TwoFactorPrompt from '../components/TwoFactorPrompt';
 

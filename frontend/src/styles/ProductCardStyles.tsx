@@ -1,23 +1,26 @@
 import styled from 'styled-components';
 
 export const Card = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 1rem;
-  width: 100%;
   background-color: ${({ theme }) => theme.colors.surface};
-  text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
-  justify-content: space-between;
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
   }
+`;
+
+export const ImageWrapper = styled.div`
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
 `;
 
 export const Image = styled.img`
@@ -26,51 +29,50 @@ export const Image = styled.img`
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover;
 `;
 
-
-export const ImageWrapper = styled.div`
-  width: 100%;
-  aspect-ratio: 4 / 3; 
-  position: relative;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  border-radius: 10px;
+export const ContentWrapper = styled.div`
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 `;
-
 
 export const Title = styled.h3`
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
-  color: ${({ theme }) => theme.colors.primary};
+  font-size: 1.1rem;
   font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0 0 0.25rem 0;
 `;
 
 export const Description = styled.p`
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  flex-grow: 1;
 `;
 
 export const Price = styled.strong`
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.success};
   margin-bottom: 1rem;
 `;
 
 export const AddButton = styled.button`
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
-  background-color: ${({ theme }) => theme.colors.secondary};
+  padding: 0.75rem 1.25rem;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.white};
   border: none;
   border-radius: 8px;
-  color: ${({ theme }) => theme.colors.white};
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.secondaryHover};
+    background-color: ${({ theme }) => theme.colors.primaryHover};
+    transform: scale(1.03);
   }
 `;
