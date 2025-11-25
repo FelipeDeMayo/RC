@@ -2,9 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const fs = require('fs');
 const csv = require('csv-parser');
-const cloudinary = require('../config/cloudinary'); // 1. Importa a configuração do Cloudinary
-
-// A configuração do Multer para salvar localmente foi REMOVIDA daqui.
+const cloudinary = require('../config/cloudinary');
 
 exports.listProducts = async (req, res) => {
   try {
@@ -38,23 +36,22 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-// 2. Lógica de createProduct ATUALIZADA
 exports.createProduct = async (req, res) => {
-  const { name, description, price } = req.body;
+  // Recebe o 'stock' do corpo da requisição
+  const { name, description, price, stock } = req.body;
 
   if (!name || !description || !price) {
     return res.status(400).json({ error: 'Campos obrigatórios faltando' });
   }
 
   try {
-    let imageUrl = ''; // Inicia a URL da imagem como vazia
+    let imageUrl = '';
 
-    // Se um arquivo foi enviado, faz o upload para o Cloudinary
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'produtos_ecommerce',
       });
-      imageUrl = result.secure_url; // Pega a URL segura retornada
+      imageUrl = result.secure_url;
     }
 
     const product = await prisma.product.create({
@@ -62,7 +59,8 @@ exports.createProduct = async (req, res) => {
         name,
         description,
         price: parseFloat(price),
-        image: imageUrl, // Salva a URL do Cloudinary (ou uma string vazia)
+        stock: stock ? parseInt(stock, 10) : 0,
+        image: imageUrl,
         admin: { connect: { id: req.user.userId } },
       },
     });
@@ -73,32 +71,28 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// 3. Lógica de updateProduct ATUALIZADA
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
   const productId = parseInt(id, 10);
-  const { name, description, price } = req.body;
+  const { name, description, price, stock } = req.body;
 
   if (isNaN(productId)) {
     return res.status(400).json({ error: 'ID de produto inválido.' });
   }
 
   try {
-    // Busca o produto existente para saber a URL da imagem atual
     const existingProduct = await prisma.product.findUnique({ where: { id: productId } });
     if (!existingProduct) {
         return res.status(404).json({ error: 'Produto não encontrado.'});
     }
 
-    let imageUrl = existingProduct.image; // Mantém a imagem antiga por padrão
+    let imageUrl = existingProduct.image;
 
-    // Se um NOVO arquivo foi enviado, substitui a imagem
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'produtos_ecommerce',
       });
       imageUrl = result.secure_url;
-      // Opcional: deletar a imagem antiga do Cloudinary para economizar espaço
     }
 
     const updatedProduct = await prisma.product.update({
@@ -107,7 +101,8 @@ exports.updateProduct = async (req, res) => {
         name,
         description,
         price: parseFloat(price),
-        image: imageUrl, // Atualiza com a nova URL (ou a antiga, se não houver novo upload)
+        stock: stock ? parseInt(stock, 10) : existingProduct.stock,
+        image: imageUrl,
       },
     });
     res.json(updatedProduct);
@@ -116,7 +111,6 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ error: 'Erro ao atualizar produto' });
   }
 };
-
 
 exports.deleteProduct = async (req, res) => {
   const { id } = req.params;
@@ -134,8 +128,6 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-
-// A lógica de bulkImport não precisa de alterações
 exports.bulkImportProducts = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'Nenhum arquivo CSV enviado.' });
@@ -149,11 +141,14 @@ exports.bulkImportProducts = (req, res) => {
     .pipe(csv())
     .on('data', (row) => {
       const price = parseFloat(row.price);
+      const stock = parseInt(row.stock, 10) || 0;
+
       if (row.name && row.description && !isNaN(price)) {
         products.push({
           name: row.name,
           description: row.description,
           price: price,
+          stock: stock, 
           image: row.image || null,
           adminId: adminId,
         });
@@ -165,7 +160,7 @@ exports.bulkImportProducts = (req, res) => {
       if (products.length === 0) {
         return res.status(400).json({
           error:
-            'Arquivo CSV vazio ou mal formatado. Colunas necessárias: name, description, price. Opcional: image (com a URL).',
+            'Arquivo CSV vazio ou mal formatado. Colunas necessárias: name, description, price. Opcional: image, stock.',
         });
       }
 

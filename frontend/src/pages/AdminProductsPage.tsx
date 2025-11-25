@@ -32,12 +32,16 @@ interface Product {
   description: string;
   price: number;
   image?: string;
+  stock?: number; // <--- Adicionado o campo opcional na interface
 }
 
 const AdminProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', price: '' });
+  
+  // <--- Adicionado 'stock' ao estado inicial
+  const [form, setForm] = useState({ name: '', description: '', price: '', stock: '' });
+  
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
@@ -68,15 +72,19 @@ const AdminProductsPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.description || !form.price) {
+    // Validação básica inclui stock agora
+    if (!form.name || !form.description || !form.price || !form.stock) {
       toast.warn('Preencha todos os campos obrigatórios');
       return;
     }
     const priceForApi = form.price.replace(',', '.');
+    
     const formData = new FormData();
     formData.append('name', form.name);
     formData.append('description', form.description);
     formData.append('price', priceForApi);
+    formData.append('stock', form.stock); // <--- Enviando o estoque
+
     if (imageFile) {
       formData.append('image', imageFile);
     }
@@ -89,7 +97,8 @@ const AdminProductsPage = () => {
         await createProduct(formData);
         toast.success('Produto criado com sucesso!');
       }
-      setForm({ name: '', description: '', price: '' });
+      // Limpa o formulário
+      setForm({ name: '', description: '', price: '', stock: '' });
       setImageFile(null);
       setEditingProduct(null);
       fetchProducts();
@@ -117,12 +126,12 @@ const AdminProductsPage = () => {
       name: product.name,
       description: product.description,
       price: String(product.price).replace('.', ','),
+      stock: String(product.stock || 0), // <--- Carrega o estoque atual para edição
     });
     setImageFile(null);
     window.scrollTo(0, 0);
   };
 
-  // --- NOVAS FUNÇÕES PARA A IMPORTAÇÃO ---
   const handleImportFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImportFile(e.target.files[0]);
@@ -148,7 +157,6 @@ const AdminProductsPage = () => {
     }
   };
 
-
   return (
     <Container>
       <Title>Painel de Produtos (Admin)</Title>
@@ -156,22 +164,47 @@ const AdminProductsPage = () => {
         <h3>{editingProduct ? 'Editar Produto' : 'Criar Novo Produto'}</h3>
         <Input name="name" placeholder="Nome" value={form.name} onChange={handleChange} required />
         <Input name="description" placeholder="Descrição" value={form.description} onChange={handleChange} required />
-        <Input name="price" type="text" inputMode="decimal" placeholder="Preço (ex: 1045,55)" value={form.price} onChange={handleChange} required />
+        
+        {/* Layout Flex para Preço e Estoque ficarem lado a lado */}
+        <div style={{ display: 'flex', gap: '1rem' }}>
+            <Input 
+                style={{ flex: 1 }}
+                name="price" 
+                type="text" 
+                inputMode="decimal" 
+                placeholder="Preço (ex: 1045,55)" 
+                value={form.price} 
+                onChange={handleChange} 
+                required 
+            />
+            <Input 
+                style={{ flex: 1 }}
+                name="stock" 
+                type="number" 
+                placeholder="Estoque (Qtd)" 
+                value={form.stock} 
+                onChange={handleChange} 
+                required 
+            />
+        </div>
+
         <input type="file" accept="image/*" onChange={handleFileChange} style={{ marginTop: '1rem' }} />
+        
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
           <Button type="submit">
             {editingProduct ? 'Atualizar Produto' : 'Criar Produto'}
           </Button>
           {editingProduct && (
-            <Button cancel type="button" onClick={() => { setEditingProduct(null); setForm({ name: '', description: '', price: '' }); setImageFile(null); }}>
+            <Button cancel type="button" onClick={() => { setEditingProduct(null); setForm({ name: '', description: '', price: '', stock: '' }); setImageFile(null); }}>
               Cancelar Edição
             </Button>
           )}
         </div>
       </Form>
+
       <Form as="div" style={{ marginTop: '3rem' }}>
         <h3>Importação em Massa</h3>
-        <p style={{ fontSize: '0.9rem', color: '#666' }}>Envie um arquivo `.csv` com as colunas: <strong>name, description, price</strong> e (opcional) <strong>image</strong> com a URL.</p>
+        <p style={{ fontSize: '0.9rem', color: '#666' }}>Envie um arquivo `.csv` com as colunas: <strong>name, description, price, stock</strong> e (opcional) <strong>image</strong> com a URL.</p>
         <form onSubmit={handleImportSubmit} style={{ marginTop: '1rem' }}>
           <Input type="file" accept=".csv" onChange={handleImportFileChange} disabled={isImporting} />
           <Button type="submit" disabled={isImporting || !importFile} style={{ marginTop: '1rem' }}>
@@ -179,6 +212,7 @@ const AdminProductsPage = () => {
           </Button>
         </form>
       </Form>
+
       <ProductsList>
         {products.map((product) => (
           <ProductCard key={product.id}>
@@ -200,6 +234,12 @@ const AdminProductsPage = () => {
                 </ProductPrice>
               </ProductTitle>
               <ProductDescription>{product.description}</ProductDescription>
+              
+              {/* Exibe o estoque no card */}
+              <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#555' }}>
+                Estoque: <strong>{product.stock ?? 0}</strong> unidades
+              </p>
+
             </div>
             <Actions>
               <ActionButton onClick={() => handleEdit(product)}>Editar</ActionButton>
