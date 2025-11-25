@@ -4,8 +4,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import AdminRoute from './routes/AdminRoute';
 import { PrivateRoute } from './routes/PrivateRoute';
-
-// Páginas
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -16,6 +14,8 @@ import AdminProductsPage from './pages/AdminProductsPage';
 import SecurityPage from './pages/SecurityPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import OrdersPage from './pages/OrdersPage';
+import AdminSalesPage from './pages/AdminSalesPage';
 
 function App() {
   return (
@@ -48,10 +48,26 @@ function App() {
             }
           />
           <Route
+            path="/profile/orders"
+            element={
+              <PrivateRoute>
+                <OrdersPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/crud/products"
             element={
               <AdminRoute>
                 <AdminProductsPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/sales"
+            element={
+              <AdminRoute>
+                <AdminSalesPage />
               </AdminRoute>
             }
           />

@@ -1,27 +1,16 @@
-const API_BASE_URL = 'http://localhost:3000/api/sales'; 
-export async function fetchSalesHistory(userToken: string): Promise<any[]> { // <--- CORREÇÃO AQUI
-    if (!userToken) {
-        throw new Error("User not authenticated. Please log in.");
-    }
+import api from './api';
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/history`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`, 
-            },
-        });
+export const checkout = async () => {
+  const response = await api.post('/api/sales/checkout');
+  return response.data;
+};
 
-        const data = await response.json();
+export const fetchMyOrders = async () => {
+  const response = await api.get('/api/sales/history');
+  return response.data;
+};
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Failed to fetch sales history.');
-        }
-
-        return data;
-    } catch (error: any) { // Type assertion for catch block
-        console.error("Error fetching sales history:", error.message);
-        throw error;
-    }
-}
+export const fetchAllSalesAdmin = async () => {
+  const response = await api.get('/api/sales/admin/sales');
+  return response.data;
+};

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaShoppingCart, FaBars, FaTimes, FaUserCog } from 'react-icons/fa';
+import { FaShoppingCart, FaBars, FaTimes, FaUserCog, FaClipboardList } from 'react-icons/fa';
 
 import { useAuth } from '../contexts/useAuth';
 import { useCart } from '../hooks/useCart';
@@ -37,7 +37,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   return (
     <TopBar>
       <LogoLink to="/">
-  <LogoImage src="/logo.png" alt="RC Fitness Logo" />
+        <LogoImage src="/logo.png" alt="RC Fitness Logo" />
       </LogoLink>
 
       <NavLinks className={isMobileMenuOpen ? 'active' : ''}>
@@ -46,14 +46,28 @@ const Navbar: React.FC<NavbarProps> = () => {
       
           <UserActions>
             <span className="user-greeting">Olá, {user?.name}</span>
+            
+            {/* Botão para ver o histórico de compras (Visível para todos logados) */}
+            <NavButton as={Link} to="/profile/orders" $variant="ghost">
+              Meus Pedidos
+            </NavButton>
+
             <NavButton $variant="secondary" onClick={() => { logoutUser(); navigate('/login'); }}>
               Sair
             </NavButton>
             
             {user?.role === 'ADMIN' ? (
-              <NavButton as={Link} to="/crud/products" title="Painel do Admin">
-                <FaUserCog size={22} />
-              </NavButton>
+              <>
+                {/* Botão para Relatório de Vendas (Apenas Admin) */}
+                <NavButton as={Link} to="/admin/sales" title="Relatório de Vendas">
+                  <FaClipboardList size={22} />
+                </NavButton>
+
+                {/* Botão para CRUD de Produtos (Apenas Admin) */}
+                <NavButton as={Link} to="/crud/products" title="Painel de Produtos">
+                  <FaUserCog size={22} />
+                </NavButton>
+              </>
             ) : (
               <CartButtonWrapper as={Link} to="/cart" title="Ver Carrinho">
                 <FaShoppingCart size={22} />

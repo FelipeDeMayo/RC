@@ -1,10 +1,7 @@
-// Ficheiro: src/pages/CartPage.tsx
-
 import { useCart } from '../hooks/useCart';
 import { Link, useNavigate } from 'react-router-dom';
-import type { ProductWithQuantity } from '../contexts/CartContextType';
-
-// CORREÇÃO: O nome do ficheiro de estilos foi ajustado
+import { toast } from 'react-toastify';
+import { checkout } from '../services/saleService';
 import {
   CartContainer,
   Title,
@@ -25,9 +22,9 @@ import {
   ClearCartButton,
 } from '../styles/CartStyles';
 import { FaShoppingCart } from 'react-icons/fa';
+import type { ProductWithQuantity } from '../contexts/CartContextType';
 
 const CartPage = () => {
-  // Pegamos as funções 'addToCart' e 'removeFromCart' para os botões de +/-
   const { cartItems, addToCart, removeFromCart, clearCart, loading } = useCart();
   const navigate = useNavigate();
 
@@ -36,13 +33,19 @@ const CartPage = () => {
     0
   );
 
-  const handleCheckout = () => {
-    // No futuro, aqui vai a lógica para ir para a página de pagamento
-    navigate('/checkout');
+  const handleCheckout = async () => {
+    try {
+      await checkout();
+      toast.success('Compra realizada com sucesso!');
+      clearCart(); 
+      navigate('/profile/orders');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao finalizar compra.');
+    }
   };
 
   if (loading) {
-    return <CartContainer><Title>A carregar carrinho...</Title></CartContainer>;
+    return <CartContainer><Title>Loading cart...</Title></CartContainer>;
   }
 
   return (
@@ -60,7 +63,7 @@ const CartPage = () => {
             {cartItems.map((item) => (
               <CartItem key={item.id}>
                 <ItemImage
-                  src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:3000/${item.image}`}
+                  src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:3000/uploads/${item.image}`}
                   alt={item.name}
                 />
                 <ItemDetails>
@@ -70,7 +73,6 @@ const CartPage = () => {
                   </ItemPrice>
                 </ItemDetails>
 
-                {/* Controles de Quantidade +/- */}
                 <QuantityControl>
                   <QuantityButton onClick={() => removeFromCart(item.id)}>-</QuantityButton>
                   <QuantityDisplay>{item.quantity}</QuantityDisplay>
